@@ -1,0 +1,22 @@
+server:
+  port: 8082
+
+dubbo:
+  application:
+    name: api-gateway-test
+    version: 1.0.0
+  registry:
+    address: nacos://link:8848?username=nacos&password=nacos
+  protocol:
+    name: dubbo
+    port: 20881
+    host: link
+  scan:
+    base-packages: cc.geektip.gateway.provider.demo.rpc
+
+# API网关配置
+api-gateway-sdk:
+  address: http://link:8001  # 网关注册中心
+  systemId: api-gateway-test
+  systemName: 网关sdk测试工程
+  systemRegistry: nacos://link:8848?username=nacos&password=nacos
