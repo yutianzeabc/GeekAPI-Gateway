@@ -11,8 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("cc.geektip.gateway.center.infrastructure.dao")
-public class ApiGatewayApplication {
+public class GatewayCenterApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ApiGatewayApplication.class, args);
+        SpringApplication.run(GatewayCenterApplication.class, args);
     }
 }
