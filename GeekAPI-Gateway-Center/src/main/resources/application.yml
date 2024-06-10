@@ -1,0 +1,22 @@
+server:
+  port: 8001
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: geektip@123456
+    url: jdbc:mysql://link:3306/api_gateway
+  data:
+    redis:
+      host: link
+      port: 6379
+      database: 6
+      password: 123456
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+caddy:
+  api: localhost:2019

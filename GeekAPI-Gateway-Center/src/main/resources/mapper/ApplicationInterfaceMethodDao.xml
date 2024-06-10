@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.geektip.gateway.center.infrastructure.dao.ApplicationInterfaceMethodDao">
+
+    <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
+            <result property="interfaceId" column="interface_id" jdbcType="VARCHAR"/>
+            <result property="methodId" column="method_id" jdbcType="VARCHAR"/>
+            <result property="methodName" column="method_name" jdbcType="VARCHAR"/>
+            <result property="parameterType" column="parameter_type" jdbcType="VARCHAR"/>
+            <result property="uri" column="uri" jdbcType="VARCHAR"/>
+            <result property="httpCommandType" column="http_command_type" jdbcType="VARCHAR"/>
+            <result property="auth" column="auth" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="queryApplicationInterfaceMethodList"
+            parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod"
+            resultType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod">
+        SELECT id, system_id, interface_id, method_id, method_name, parameter_type, uri, http_command_type, auth
+        FROM application_interface_method
+        <where>
+            <if test="systemId != null">
+                system_id = #{systemId}
+            </if>
+            <if test="systemId != null">
+                AND interface_id = #{interfaceId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryApplicationInterfaceMethodListByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod">
+        SELECT id, system_id, interface_id, method_id, method_name, parameter_type, uri, http_command_type, auth
+        FROM application_interface_method
+        <where>
+            <if test="data != null and data.systemId != ''">
+                and system_id = #{data.systemId}
+            </if>
+            <if test="data != null and data.interfaceId != ''">
+                and interface_id = #{data.interfaceId}
+            </if>
+        </where>
+        order by id desc
+        limit #{pageStart},#{pageEnd}
+    </select>
+
+    <select id="queryApplicationInterfaceMethodListCountByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="java.lang.Integer">
+        SELECT count(id) FROM application_interface_method
+        <where>
+            <if test="data != null and data.systemId != ''">
+                and system_id = #{data.systemId}
+            </if>
+            <if test="data != null and data.interfaceId != ''">
+                and interface_id = #{data.interfaceId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

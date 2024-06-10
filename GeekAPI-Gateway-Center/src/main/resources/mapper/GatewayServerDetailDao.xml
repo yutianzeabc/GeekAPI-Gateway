@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.geektip.gateway.center.infrastructure.dao.GatewayServerDetailDao">
+
+    <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="groupId" column="group_id" jdbcType="VARCHAR"/>
+            <result property="gatewayId" column="gateway_id" jdbcType="VARCHAR"/>
+            <result property="gatewayName" column="gateway_name" jdbcType="VARCHAR"/>
+            <result property="gatewayAddress" column="gateway_address" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="queryGatewayServerDetail" parameterType="java.lang.String" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+        SELECT gateway_id, gateway_name, gateway_address, status
+        FROM gateway_server_detail
+        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress}
+    </select>
+
+    <update id="updateGatewayStatus" parameterType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+        UPDATE gateway_server_detail
+        SET status = #{status}
+        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress}
+    </update>
+
+    <select id="queryGatewayServerDetailListByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+        SELECT id, group_id, gateway_id, gateway_name, gateway_address, status, create_time, update_time
+        FROM gateway_server_detail
+        <where>
+            <if test="data != null and data.groupId != ''">
+                and group_id = #{data.groupId}
+            </if>
+            <if test="data != null and data.gatewayId != ''">
+                and gateway_id = #{data.gatewayId}
+            </if>
+        </where>
+        order by id desc
+        limit #{pageStart},#{pageEnd}
+    </select>
+
+    <select id="queryGatewayServerDetailListCountByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="java.lang.Integer">
+        SELECT count(id) FROM gateway_server_detail
+        <where>
+            <if test="data != null and data.groupId != ''">
+                and group_id = #{data.groupId}
+            </if>
+            <if test="data != null and data.gatewayId != ''">
+                and gateway_id = #{data.gatewayId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

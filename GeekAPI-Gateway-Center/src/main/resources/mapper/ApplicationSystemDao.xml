@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.geektip.gateway.center.infrastructure.dao.ApplicationSystemDao">
+
+    <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.ApplicationSystem">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
+            <result property="systemName" column="system_name" jdbcType="VARCHAR"/>
+            <result property="systemType" column="system_type" jdbcType="VARCHAR"/>
+            <result property="systemRegistry" column="system_registry" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="queryApplicationSystemList"
+            parameterType="java.util.List"
+            resultType="cc.geektip.gateway.center.infrastructure.po.ApplicationSystem">
+        SELECT id, system_id, system_name, system_type, system_registry
+        FROM application_system
+        <where>
+            <if test="list != null">
+                system_id in
+                <foreach collection="list" index="idx" item="ids" open="(" close=")" separator=",">
+                    #{ids}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryApplicationSystemListByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="cc.geektip.gateway.center.infrastructure.po.ApplicationSystem">
+        SELECT id, system_id, system_name, system_type, system_registry
+        FROM application_system
+        <where>
+            <if test="data != null and data.systemId != ''">
+                and system_id = #{data.systemId}
+            </if>
+            <if test="data != null and data.systemName != ''">
+                and system_name = #{data.systemName}
+            </if>
+        </where>
+        order by id desc
+        limit #{pageStart},#{pageEnd}
+    </select>
+
+    <select id="queryApplicationSystemListCountByPage"
+            parameterType="cc.geektip.gateway.center.infrastructure.common.OperationRequest"
+            resultType="java.lang.Integer">
+        SELECT count(id) FROM application_system
+        <where>
+            <if test="data != null and data.systemId != ''">
+                and system_id = #{data.systemId}
+            </if>
+            <if test="data != null and data.systemName != ''">
+                and system_name = #{data.systemName}
+            </if>
+        </where>
+    </select>
+
+</mapper>
