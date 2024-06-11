@@ -7,6 +7,7 @@ import cc.geektip.gateway.core.executor.Executor;
 import cc.geektip.gateway.core.session.Configuration;
 import cc.geektip.gateway.core.session.GatewaySession;
 import cc.geektip.gateway.core.session.GatewaySessionFactory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author: Fish
  * @date: 2024/5/24
  */
+
 @Slf4j
+@Getter
 @RequiredArgsConstructor
 public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
 

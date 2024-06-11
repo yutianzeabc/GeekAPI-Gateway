@@ -38,17 +38,23 @@ public class ProtocolDataHandler extends BaseHandler<FullHttpRequest> {
             String uri = requestParser.getUri();
             if (null == uri) return;
             Map<String, Object> args = requestParser.parse();
+
             // 2. 调用会话服务
             GatewaySession gatewaySession = gatewaySessionFactory.openSession(uri);
             IGenericReference reference = gatewaySession.getMapper();
             SessionResult result = reference.$invoke(args);
+
             // 3. 封装返回结果
-            DefaultFullHttpResponse response = new ResponseParser().parse("0000".equals(result.getCode()) ? GatewayResultMessage.buildSuccess(result.getData()) : GatewayResultMessage.buildError(AgreementConstants.ResponseCode.NOT_FOUND.getCode(), "网关协议调用失败！"));
+            DefaultFullHttpResponse response = new ResponseParser().parse("0000".equals(result.getCode()) ? GatewayResultMessage.buildSuccess(result.getData(), node()) : GatewayResultMessage.buildError(AgreementConstants.ResponseCode.NOT_FOUND.getCode(), "网关协议调用失败！", node()));
             channel.writeAndFlush(response);
         } catch (Exception e) {
-            DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.BAD_GATEWAY.getCode(), "网关协议调用失败！" + e.getMessage()));
+            DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.BAD_GATEWAY.getCode(), "网关协议调用失败！" + e.getMessage(), node()));
             channel.writeAndFlush(response);
         }
+    }
+
+    private String node() {
+        return gatewaySessionFactory.getConfiguration().getHostName()+":"+gatewaySessionFactory.getConfiguration().getPort();
     }
 
 }
