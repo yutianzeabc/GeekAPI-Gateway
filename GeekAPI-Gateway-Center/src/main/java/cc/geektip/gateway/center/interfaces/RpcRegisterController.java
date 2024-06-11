@@ -1,8 +1,8 @@
 package cc.geektip.gateway.center.interfaces;
 
-import cc.geektip.gateway.center.application.IConfigManageService;
-import cc.geektip.gateway.center.application.IMessageService;
-import cc.geektip.gateway.center.application.IRegisterManageService;
+import cc.geektip.gateway.center.application.service.IConfigManageService;
+import cc.geektip.gateway.center.application.service.IMessageService;
+import cc.geektip.gateway.center.application.service.IRegisterManageService;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceMethodVO;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceVO;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationSystemVO;

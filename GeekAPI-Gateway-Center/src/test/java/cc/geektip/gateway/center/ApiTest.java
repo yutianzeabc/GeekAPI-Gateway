@@ -1,7 +1,7 @@
 package cc.geektip.gateway.center;
 
-import cc.geektip.gateway.center.application.IConfigManageService;
-import cc.geektip.gateway.center.application.IRegisterManageService;
+import cc.geektip.gateway.center.application.service.IConfigManageService;
+import cc.geektip.gateway.center.application.service.IRegisterManageService;
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.GatewayServerVO;
 import cc.geektip.gateway.center.domain.message.Publisher;

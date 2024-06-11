@@ -15,10 +15,16 @@
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <select id="queryGatewayServerDetail" parameterType="java.lang.String" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+    <select id="queryOnlineGatewayServerDetail" parameterType="java.lang.String" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
         SELECT gateway_id, gateway_name, gateway_address, status
         FROM gateway_server_detail
-        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress}
+        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress} AND status = '1'
+    </select>
+
+    <select id="queryOnlineGatewayServerDetailList" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
+        SELECT id, group_id, gateway_id, gateway_name, gateway_address, status, create_time, update_time
+        FROM gateway_server_detail
+        WHERE status = '1'
     </select>
 
     <update id="updateGatewayStatus" parameterType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">

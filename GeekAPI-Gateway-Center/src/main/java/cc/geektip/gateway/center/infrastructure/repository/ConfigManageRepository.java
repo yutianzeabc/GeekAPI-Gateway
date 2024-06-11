@@ -4,7 +4,6 @@ import cc.geektip.gateway.center.domain.manage.model.vo.*;
 import cc.geektip.gateway.center.domain.manage.repository.IConfigManageRepository;
 import cc.geektip.gateway.center.infrastructure.dao.*;
 import cc.geektip.gateway.center.infrastructure.po.*;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Repository;
 
@@ -44,7 +43,7 @@ public class ConfigManageRepository implements IConfigManageRepository {
 
     @Override
     public List<GatewayServerDetailVO> queryGatewayServerDetailList() {
-        List<GatewayServerDetail> gatewayServerDetails = gatewayServerDetailDao.selectList(null);
+        List<GatewayServerDetail> gatewayServerDetails = gatewayServerDetailDao.queryOnlineGatewayServerDetailList();
         return gatewayServerDetails.stream().map(gatewayServerDetail -> {
             GatewayServerDetailVO gatewayServerDetailVO = new GatewayServerDetailVO();
             gatewayServerDetailVO.setId(gatewayServerDetail.getId());
@@ -75,7 +74,7 @@ public class ConfigManageRepository implements IConfigManageRepository {
         GatewayServerDetail req = new GatewayServerDetail();
         req.setGatewayId(gatewayId);
         req.setGatewayAddress(gatewayAddress);
-        GatewayServerDetail gatewayServerDetail = gatewayServerDetailDao.queryGatewayServerDetail(req);
+        GatewayServerDetail gatewayServerDetail = gatewayServerDetailDao.queryOnlineGatewayServerDetail(req);
         if (null == gatewayServerDetail) return null;
         GatewayServerDetailVO gatewayServerDetailVO = new GatewayServerDetailVO();
         gatewayServerDetailVO.setId(gatewayServerDetail.getId());

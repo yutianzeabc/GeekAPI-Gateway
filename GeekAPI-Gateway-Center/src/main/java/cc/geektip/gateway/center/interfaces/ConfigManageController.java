@@ -1,8 +1,8 @@
 package cc.geektip.gateway.center.interfaces;
 
-import cc.geektip.gateway.center.application.IConfigManageService;
-import cc.geektip.gateway.center.application.IMessageService;
-import cc.geektip.gateway.center.domain.loadbalance.model.event.GatewayServerRegisteredEvent;
+import cc.geektip.gateway.center.application.service.IConfigManageService;
+import cc.geektip.gateway.center.application.service.IMessageService;
+import cc.geektip.gateway.center.application.event.GatewayServerUpdatedEvent;
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.*;
 import cc.geektip.gateway.center.infrastructure.common.ResponseCode;
@@ -91,13 +91,32 @@ public class ConfigManageController {
             log.info("注册网关服务节点 gatewayId：{} gatewayName：{} gatewayAddress：{}", gatewayId, gatewayName, gatewayAddress);
             // 1. 注册网关服务节点
             boolean done = configManageService.registerGatewayServerNode(groupId, gatewayId, gatewayName, gatewayAddress);
-            // 2. 读取最新网关算力数据
-            List<GatewayServerDetailVO> gatewayServerDetailVOList = configManageService.queryGatewayServerDetailList();
-            // 3. 发布网关服务节点注册事件，触发Caddy配置刷新
-            eventPublisher.publishEvent(new GatewayServerRegisteredEvent(this, gatewayServerDetailVOList));
+            // 2. 发布网关服务节点注册事件，触发Caddy配置刷新
+            eventPublisher.publishEvent(new GatewayServerUpdatedEvent(this));
             return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), done);
         } catch (Exception e) {
             log.error("注册网关服务节点异常：", e);
+            return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), false);
+        }
+    }
+
+    /**
+     * 注销网关服务节点
+     * @param groupId 分组标识
+     * @param gatewayId 网关标识
+     * @return 注销状态
+     */
+    @PostMapping(value = "unregisterGateway")
+    public Result<Boolean> unRegisterGatewayServerNode(@RequestParam String groupId, @RequestParam String gatewayId, @RequestParam String gatewayAddress) {
+        try {
+            log.info("注销网关服务节点 groupId：{} gatewayId：{}", groupId, gatewayId);
+            // 1. 注销网关服务节点
+            boolean done = configManageService.unregisterGatewayServerNode(groupId, gatewayId, gatewayAddress);
+            // 2. 发布网关服务节点注册事件，触发Caddy配置刷新
+            eventPublisher.publishEvent(new GatewayServerUpdatedEvent(this));
+            return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), done);
+        } catch (Exception e) {
+            log.error("注销网关服务节点异常：", e);
             return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), false);
         }
     }
@@ -116,6 +135,8 @@ public class ConfigManageController {
         try {
             log.info("网关服务节点挂载应用系统 groupId：{} gatewayId：{} systemId：{}", groupId, gatewayId, systemId);
             configManageService.distributionGatewayServerNode(groupId, gatewayId, systemId);
+            // 通知网关服务节点注册新的应用系统
+            messageService.pushMessage(gatewayId, systemId);
             return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), true);
         } catch (DuplicateKeyException e) {
             log.warn("网关服务节点与应用系统重复分配 groupId：{} gatewayId：{} systemId：{}", groupId, gatewayId, systemId);

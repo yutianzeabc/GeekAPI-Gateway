@@ -31,7 +31,7 @@ public class HttpConnection implements Connection {
     public Object execute(String method, String[] parameterTypes, String[] parameterNames, Object[] args) {
         String res = "";
         try {
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=GBK"), (String) args[0]);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=UTF-8"), args[0].toString());
             Request request = requestBuilder.post(body).build();
             try (Response response = httpClient.newCall(request).execute()) {
                 if (response.isSuccessful()) {

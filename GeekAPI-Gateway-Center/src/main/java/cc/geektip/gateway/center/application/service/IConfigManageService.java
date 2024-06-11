@@ -1,7 +1,8 @@
-package cc.geektip.gateway.center.application;
+package cc.geektip.gateway.center.application.service;
 
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface IConfigManageService {
     List<GatewayDistributionVO> queryGatewayDistributionList();
 
     boolean registerGatewayServerNode(String groupId, String gatewayId, String gatewayName, String gatewayAddress);
+
+    boolean unregisterGatewayServerNode(String groupId, String gatewayId, String gatewayAddress);
 
     ApplicationSystemRichInfo queryApplicationSystemRichInfo(String gatewayId, String systemId);
 

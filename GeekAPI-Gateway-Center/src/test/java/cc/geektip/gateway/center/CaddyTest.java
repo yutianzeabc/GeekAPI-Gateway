@@ -1,6 +1,6 @@
 package cc.geektip.gateway.center;
 
-import cc.geektip.gateway.center.application.ILoadBalanceService;
+import cc.geektip.gateway.center.application.service.ILoadBalanceService;
 import cc.geektip.gateway.center.domain.loadbalance.model.aggregates.CaddyConfig;
 import cc.geektip.gateway.center.domain.loadbalance.model.vo.ProxyConfigVO;
 import jakarta.annotation.Resource;

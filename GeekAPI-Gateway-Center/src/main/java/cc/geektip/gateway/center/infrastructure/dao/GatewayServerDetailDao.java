@@ -14,7 +14,9 @@ import java.util.List;
 */
 public interface GatewayServerDetailDao extends BaseMapper<GatewayServerDetail> {
 
-    GatewayServerDetail queryGatewayServerDetail(GatewayServerDetail gatewayServerDetail);
+    GatewayServerDetail queryOnlineGatewayServerDetail(GatewayServerDetail gatewayServerDetail);
+
+    List<GatewayServerDetail> queryOnlineGatewayServerDetailList();
 
     boolean updateGatewayStatus(GatewayServerDetail gatewayServerDetail);
 

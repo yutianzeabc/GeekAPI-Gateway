@@ -37,16 +37,44 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/config/registerGateway", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/config/registerGateway", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
             log.error("网关服务注册异常，链接资源不可用：{}", address + "/wg/admin/config/registerGateway");
             throw e;
         }
-        if (null == result || !"0000".equals(result.getCode()))
+        if (null == result || !result.getData() || !"0000".equals(result.getCode()))
             throw new GatewayException("网关服务注册异常 [gatewayId：" + gatewayId + "] 、[gatewayAddress：" + gatewayAddress + "]");
         log.info("向网关中心注册网关算力服务 gatewayId：{} gatewayName：{} gatewayAddress：{} 注册结果：{}", gatewayId, gatewayName, gatewayAddress, resultStr);
+    }
+
+    /**
+     * 注销网关服务
+     *
+     * @param address   注册中心
+     * @param groupId   分组ID
+     * @param gatewayId 网关ID
+     */
+    public void doUnregister(String address, String groupId, String gatewayId, String gatewayName, String gatewayAddress) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("groupId", groupId);
+        paramMap.put("gatewayId", gatewayId);
+        paramMap.put("gatewayName", gatewayName);
+        paramMap.put("gatewayAddress", gatewayAddress);
+        String resultStr;
+        Result<Boolean> result;
+        try {
+            resultStr = HttpUtil.post(address + "/wg/admin/config/unregisterGateway", paramMap, 2000);
+            result = JSON.parseObject(resultStr, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            log.error("网关服务注销异常，链接资源不可用：{}", address + "/wg/admin/config/unregisterGateway");
+            throw e;
+        }
+        if (null == result || !result.getData() || !"0000".equals(result.getCode()))
+            throw new GatewayException("网关服务注销异常 [gatewayId：" + gatewayId + "] 、[gatewayAddress：" + gatewayAddress + "]");
+        log.info("向网关中心注销网关算力服务 gatewayId：{} gatewayName：{} gatewayAddress：{} 注销结果：{}", gatewayId, gatewayName, gatewayAddress, resultStr);
     }
 
     /**
@@ -63,7 +91,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<ApplicationSystemRichInfo> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/config/queryApplicationSystemRichInfo", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/config/queryApplicationSystemRichInfo", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -86,7 +114,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<Map<String, String>> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/config/queryRedisConfig", "", 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/config/queryRedisConfig", "", 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {

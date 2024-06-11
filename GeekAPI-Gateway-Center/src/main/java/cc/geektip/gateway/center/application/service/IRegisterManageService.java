@@ -1,4 +1,4 @@
-package cc.geektip.gateway.center.application;
+package cc.geektip.gateway.center.application.service;
 
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceMethodVO;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceVO;

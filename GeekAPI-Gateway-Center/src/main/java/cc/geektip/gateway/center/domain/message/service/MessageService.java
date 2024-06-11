@@ -1,6 +1,6 @@
 package cc.geektip.gateway.center.domain.message.service;
 
-import cc.geektip.gateway.center.application.IMessageService;
+import cc.geektip.gateway.center.application.service.IMessageService;
 import cc.geektip.gateway.center.domain.message.Publisher;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

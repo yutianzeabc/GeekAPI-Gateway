@@ -1,4 +1,4 @@
-package cc.geektip.gateway.center.application;
+package cc.geektip.gateway.center.application.service;
 
 import cc.geektip.gateway.center.domain.loadbalance.model.aggregates.CaddyConfig;
 

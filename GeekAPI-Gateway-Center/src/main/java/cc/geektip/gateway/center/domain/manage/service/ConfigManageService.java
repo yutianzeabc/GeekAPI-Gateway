@@ -1,6 +1,6 @@
 package cc.geektip.gateway.center.domain.manage.service;
 
-import cc.geektip.gateway.center.application.IConfigManageService;
+import cc.geektip.gateway.center.application.service.IConfigManageService;
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.*;
 import cc.geektip.gateway.center.domain.manage.repository.IConfigManageRepository;
@@ -53,6 +53,16 @@ public class ConfigManageService implements IConfigManageService {
         } else {
             return configManageRepository.updateGatewayStatus(gatewayId, gatewayAddress, Constants.GatewayStatus.Available);
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean unregisterGatewayServerNode(String groupId, String gatewayId, String gatewayAddress) {
+        GatewayServerDetailVO gatewayServerDetailVO = configManageRepository.queryGatewayServerDetail(gatewayId, gatewayAddress);
+        if (null != gatewayServerDetailVO) {
+            return configManageRepository.updateGatewayStatus(gatewayId, gatewayServerDetailVO.getGatewayAddress(), Constants.GatewayStatus.UnAvailable);
+        }
+        return false;
     }
 
     @Override
