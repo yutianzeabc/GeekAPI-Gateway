@@ -18,7 +18,7 @@
     <select id="queryOnlineGatewayServerDetail" parameterType="java.lang.String" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
         SELECT gateway_id, gateway_name, gateway_address, status
         FROM gateway_server_detail
-        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress} AND status = '1'
+        WHERE gateway_id = #{gatewayId} AND status = '1'
     </select>
 
     <select id="queryOnlineGatewayServerDetailList" resultType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
@@ -29,8 +29,13 @@
 
     <update id="updateGatewayStatus" parameterType="cc.geektip.gateway.center.infrastructure.po.GatewayServerDetail">
         UPDATE gateway_server_detail
-        SET status = #{status}
-        WHERE gateway_id = #{gatewayId} AND gateway_address = #{gatewayAddress}
+        <set>
+            status = #{status}
+            <if test="gatewayAddress != null">
+                , gateway_address = #{gatewayAddress}
+            </if>
+        </set>
+        WHERE gateway_id = #{gatewayId}
     </update>
 
     <select id="queryGatewayServerDetailListByPage"

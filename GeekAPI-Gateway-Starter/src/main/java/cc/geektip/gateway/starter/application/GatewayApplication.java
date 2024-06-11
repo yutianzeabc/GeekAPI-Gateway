@@ -9,6 +9,7 @@ import cc.geektip.gateway.starter.domain.model.vo.ApplicationInterfaceMethodVO;
 import cc.geektip.gateway.starter.domain.model.vo.ApplicationInterfaceVO;
 import cc.geektip.gateway.starter.domain.model.vo.ApplicationSystemVO;
 import cc.geektip.gateway.starter.domain.service.GatewayCenterService;
+import cc.geektip.gateway.starter.domain.service.HeartbeatPublisher;
 import io.netty.channel.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
 
@@ -35,6 +37,8 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
     private final GatewayCenterService gatewayCenterService;
 
     private final Configuration configuration;
+
+    private final HeartbeatPublisher heartbeatPublisher;
 
     private final Channel gatewaySocketServerChannel;
 
@@ -89,14 +93,14 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
     @Override
     public void onApplicationEvent(@NotNull ContextClosedEvent event) {
         try {
-            gatewayCenterService.doUnregister(
+            gatewayCenterService.doOffline(
                     properties.getAddress(),
                     properties.getGroupId(),
                     properties.getGatewayId(),
                     properties.getGatewayName(),
                     properties.getGatewayAddress()
             );
-            log.info("应用容器关闭，网关服务注销成功，groupId：{} gatewayId：{}", properties.getGroupId(), properties.getGatewayId());
+            log.info("应用容器关闭，网关服务下线成功，groupId：{} gatewayId：{}", properties.getGroupId(), properties.getGatewayId());
             if (gatewaySocketServerChannel.isActive()) {
                 gatewaySocketServerChannel.close();
                 log.info("应用容器关闭，API网关服务关闭。LocalAddress：{}", gatewaySocketServerChannel.localAddress());
@@ -110,6 +114,12 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
     public void handleMessage(Object message) {
         log.info("【事件通知】接收注册中心推送消息 message：{}", message);
         addMappers(message.toString().substring(1, message.toString().length() - 1));
+    }
+
+    // 每分钟发送一次心跳
+    @Scheduled(fixedRate = 60000)
+    public void sendHeartbeat() {
+        heartbeatPublisher.doHeartBeat();
     }
 
 }

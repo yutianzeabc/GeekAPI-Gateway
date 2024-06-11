@@ -17,7 +17,7 @@ public interface IConfigManageRepository {
 
     boolean registerGatewayServerNode(String groupId, String gatewayId, String gatewayName, String gatewayAddress, Integer available);
 
-    GatewayServerDetailVO queryGatewayServerDetail(String gatewayId, String gatewayAddress);
+    GatewayServerDetailVO queryGatewayServerDetail(String gatewayId);
 
     boolean updateGatewayStatus(String gatewayId, String gatewayAddress, Integer available);
 

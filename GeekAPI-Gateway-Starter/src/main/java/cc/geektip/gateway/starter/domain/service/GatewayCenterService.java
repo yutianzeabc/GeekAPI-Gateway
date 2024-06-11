@@ -56,7 +56,7 @@ public class GatewayCenterService {
      * @param groupId   分组ID
      * @param gatewayId 网关ID
      */
-    public void doUnregister(String address, String groupId, String gatewayId, String gatewayName, String gatewayAddress) {
+    public void doOffline(String address, String groupId, String gatewayId, String gatewayName, String gatewayAddress) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("groupId", groupId);
         paramMap.put("gatewayId", gatewayId);
@@ -65,16 +65,16 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/config/unregisterGateway", paramMap, 2000);
+            resultStr = HttpUtil.post(address + "/wg/admin/config/offlineGateway", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
-            log.error("网关服务注销异常，链接资源不可用：{}", address + "/wg/admin/config/unregisterGateway");
+            log.error("网关服务下线异常，链接资源不可用：{}", address + "/wg/admin/config/offlineGateway");
             throw e;
         }
         if (null == result || !result.getData() || !"0000".equals(result.getCode()))
-            throw new GatewayException("网关服务注销异常 [gatewayId：" + gatewayId + "] 、[gatewayAddress：" + gatewayAddress + "]");
-        log.info("向网关中心注销网关算力服务 gatewayId：{} gatewayName：{} gatewayAddress：{} 注销结果：{}", gatewayId, gatewayName, gatewayAddress, resultStr);
+            throw new GatewayException("网关服务下线异常 [gatewayId：" + gatewayId + "] 、[gatewayAddress：" + gatewayAddress + "]");
+        log.info("向网关中心下线网关算力服务 gatewayId：{} gatewayName：{} gatewayAddress：{} 下线结果：{}", gatewayId, gatewayName, gatewayAddress, resultStr);
     }
 
     /**

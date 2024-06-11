@@ -4,6 +4,7 @@ import cc.geektip.gateway.core.session.defaults.DefaultGatewaySessionFactory;
 import cc.geektip.gateway.core.socket.GatewaySocketServer;
 import cc.geektip.gateway.starter.application.GatewayApplication;
 import cc.geektip.gateway.starter.domain.service.GatewayCenterService;
+import cc.geektip.gateway.starter.domain.service.HeartbeatPublisher;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,9 +14,11 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
@@ -31,6 +34,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @Configuration
+@EnableScheduling
 @EnableConfigurationProperties(GatewayServiceProperties.class)
 public class GatewayAutoConfig {
 
@@ -73,6 +77,10 @@ public class GatewayAutoConfig {
         return new MessageListenerAdapter(gatewayApplication);
     }
 
+    @Bean
+    public HeartbeatPublisher heartbeatPublisher(RedisTemplate<String, Object> redisMessageTemplate, GatewayServiceProperties properties) {
+        return new HeartbeatPublisher(redisMessageTemplate, properties);
+    }
 
     @Bean
     public GatewayCenterService registerGatewayService() {
@@ -80,8 +88,8 @@ public class GatewayAutoConfig {
     }
 
     @Bean
-    public GatewayApplication gatewayApplication(GatewayServiceProperties properties, GatewayCenterService gatewayCenterService, cc.geektip.gateway.core.session.Configuration configuration, Channel gatewaySocketServerChannel) {
-        return new GatewayApplication(properties, gatewayCenterService, configuration, gatewaySocketServerChannel);
+    public GatewayApplication gatewayApplication(GatewayServiceProperties properties, GatewayCenterService gatewayCenterService, cc.geektip.gateway.core.session.Configuration configuration, HeartbeatPublisher heartbeatPublisher, Channel gatewaySocketServerChannel) {
+        return new GatewayApplication(properties, gatewayCenterService, configuration, heartbeatPublisher, gatewaySocketServerChannel);
     }
 
     /**

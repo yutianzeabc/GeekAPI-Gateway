@@ -1,15 +1,14 @@
 package cc.geektip.gateway.center.interfaces;
 
 import cc.geektip.gateway.center.application.service.IConfigManageService;
+import cc.geektip.gateway.center.application.service.IHealthManageService;
 import cc.geektip.gateway.center.application.service.IMessageService;
-import cc.geektip.gateway.center.application.event.GatewayServerUpdatedEvent;
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.*;
 import cc.geektip.gateway.center.infrastructure.common.ResponseCode;
 import cc.geektip.gateway.center.infrastructure.common.Result;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +29,7 @@ public class ConfigManageController {
     private IConfigManageService configManageService;
 
     @Resource
-    private ApplicationEventPublisher eventPublisher;
+    private IHealthManageService healthManageService;
 
     @Resource
     private IMessageService messageService;
@@ -90,10 +89,10 @@ public class ConfigManageController {
         try {
             log.info("注册网关服务节点 gatewayId：{} gatewayName：{} gatewayAddress：{}", gatewayId, gatewayName, gatewayAddress);
             // 1. 注册网关服务节点
-            boolean done = configManageService.registerGatewayServerNode(groupId, gatewayId, gatewayName, gatewayAddress);
-            // 2. 发布网关服务节点注册事件，触发Caddy配置刷新
-            eventPublisher.publishEvent(new GatewayServerUpdatedEvent(this));
-            return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), done);
+            boolean doneR = configManageService.registerGatewayServerNode(groupId, gatewayId, gatewayName, gatewayAddress);
+            // 2. 调用节点健康管理服务设置健康状态并发布网关服务节点更新事件，触发Caddy配置刷新
+            boolean doneT = healthManageService.triggerGatewayServerNodeOnline(groupId, gatewayId);
+            return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), doneR && doneT);
         } catch (Exception e) {
             log.error("注册网关服务节点异常：", e);
             return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), false);
@@ -101,22 +100,21 @@ public class ConfigManageController {
     }
 
     /**
-     * 注销网关服务节点
-     * @param groupId 分组标识
+     * 下线网关服务节点
+     *
+     * @param groupId   分组标识
      * @param gatewayId 网关标识
-     * @return 注销状态
+     * @return 下线状态
      */
-    @PostMapping(value = "unregisterGateway")
-    public Result<Boolean> unRegisterGatewayServerNode(@RequestParam String groupId, @RequestParam String gatewayId, @RequestParam String gatewayAddress) {
+    @PostMapping(value = "offlineGateway")
+    public Result<Boolean> offlineGatewayServerNode(@RequestParam String groupId, @RequestParam String gatewayId, @RequestParam String gatewayAddress) {
         try {
-            log.info("注销网关服务节点 groupId：{} gatewayId：{}", groupId, gatewayId);
-            // 1. 注销网关服务节点
-            boolean done = configManageService.unregisterGatewayServerNode(groupId, gatewayId, gatewayAddress);
-            // 2. 发布网关服务节点注册事件，触发Caddy配置刷新
-            eventPublisher.publishEvent(new GatewayServerUpdatedEvent(this));
+            log.info("下线网关服务节点 groupId：{} gatewayId：{}", groupId, gatewayId);
+            // 1. 调用节点健康管理服务设置健康状态并发布网关服务节点更新事件，触发Caddy配置刷新
+            boolean done = healthManageService.triggerGatewayServerNodeOffline(groupId, gatewayId);
             return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), done);
         } catch (Exception e) {
-            log.error("注销网关服务节点异常：", e);
+            log.error("下线网关服务节点异常：", e);
             return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), false);
         }
     }
@@ -125,6 +123,7 @@ public class ConfigManageController {
      * 分配网关服务节点
      * groupId --1:n--> gatewayId --1:n--> systemId
      * 网关分组下有多个网关，每个网关下有多个系统
+     *
      * @param groupId   分组标识
      * @param gatewayId 网关标识
      * @param systemId  系统标识
@@ -158,6 +157,7 @@ public class ConfigManageController {
             return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), null);
         }
     }
+
     @PostMapping(value = "queryApplicationInterfaceList")
     public Result<List<ApplicationInterfaceVO>> queryApplicationInterfaceList() {
         try {

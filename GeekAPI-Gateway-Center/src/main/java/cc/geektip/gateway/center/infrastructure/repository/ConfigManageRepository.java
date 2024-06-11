@@ -70,10 +70,9 @@ public class ConfigManageRepository implements IConfigManageRepository {
     }
 
     @Override
-    public GatewayServerDetailVO queryGatewayServerDetail(String gatewayId, String gatewayAddress) {
+    public GatewayServerDetailVO queryGatewayServerDetail(String gatewayId) {
         GatewayServerDetail req = new GatewayServerDetail();
         req.setGatewayId(gatewayId);
-        req.setGatewayAddress(gatewayAddress);
         GatewayServerDetail gatewayServerDetail = gatewayServerDetailDao.queryOnlineGatewayServerDetail(req);
         if (null == gatewayServerDetail) return null;
         GatewayServerDetailVO gatewayServerDetailVO = new GatewayServerDetailVO();

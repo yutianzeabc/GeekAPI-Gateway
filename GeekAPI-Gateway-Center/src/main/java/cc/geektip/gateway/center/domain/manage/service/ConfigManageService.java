@@ -41,9 +41,9 @@ public class ConfigManageService implements IConfigManageService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean registerGatewayServerNode(String groupId, String gatewayId, String gatewayName, String gatewayAddress) {
-        GatewayServerDetailVO gatewayServerDetailVO = configManageRepository.queryGatewayServerDetail(gatewayId, gatewayAddress);
+        GatewayServerDetailVO gatewayServerDetailVO = configManageRepository.queryGatewayServerDetail(gatewayId);
         if (null == gatewayServerDetailVO) {
             try {
                 return configManageRepository.registerGatewayServerNode(groupId, gatewayId, gatewayName, gatewayAddress, Constants.GatewayStatus.Available);
@@ -56,17 +56,7 @@ public class ConfigManageService implements IConfigManageService {
     }
 
     @Override
-    @Transactional
-    public boolean unregisterGatewayServerNode(String groupId, String gatewayId, String gatewayAddress) {
-        GatewayServerDetailVO gatewayServerDetailVO = configManageRepository.queryGatewayServerDetail(gatewayId, gatewayAddress);
-        if (null != gatewayServerDetailVO) {
-            return configManageRepository.updateGatewayStatus(gatewayId, gatewayServerDetailVO.getGatewayAddress(), Constants.GatewayStatus.UnAvailable);
-        }
-        return false;
-    }
-
-    @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ApplicationSystemRichInfo queryApplicationSystemRichInfo(String gatewayId, String systemId) {
         // 1. 查询出网关ID对应的关联系统ID集合。也就是一个网关ID会被分配一些系统RPC服务注册进来，需要把这些服务查询出来。
         List<String> systemIdList = new ArrayList<>();
@@ -112,7 +102,7 @@ public class ConfigManageService implements IConfigManageService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void distributionGatewayServerNode(String groupId, String gatewayId, String systemId) {
         String systemName = configManageRepository.queryApplicationSystemName(systemId);
         if (!StringUtils.hasText(systemName))

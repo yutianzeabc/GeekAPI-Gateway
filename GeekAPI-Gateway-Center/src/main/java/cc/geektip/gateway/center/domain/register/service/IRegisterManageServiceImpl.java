@@ -21,19 +21,19 @@ public class IRegisterManageServiceImpl implements IRegisterManageService {
     private IRegisterManageRepository registerManageRepository;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void registerApplication(ApplicationSystemVO applicationSystemVO) {
         registerManageRepository.registerApplication(applicationSystemVO);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void registerApplicationInterface(ApplicationInterfaceVO applicationInterfaceVO) {
         registerManageRepository.registerApplicationInterface(applicationInterfaceVO);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void registerApplicationInterfaceMethod(ApplicationInterfaceMethodVO applicationInterfaceMethodVO) {
         registerManageRepository.registerApplicationInterfaceMethod(applicationInterfaceMethodVO);
     }
