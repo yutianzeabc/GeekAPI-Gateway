@@ -12,6 +12,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("api-gateway-sdk")
 public class GatewaySDKProperties {
     /**
+     * SDK服务上报是否启用
+     */
+    private boolean enabled = true;
+    /**
      * 网关注册中心地址
      */
     private String address;

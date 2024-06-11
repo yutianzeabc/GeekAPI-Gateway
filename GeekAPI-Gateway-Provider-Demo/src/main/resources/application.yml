@@ -16,6 +16,7 @@ dubbo:
 
 # API网关配置
 api-gateway-sdk:
+  enabled: true
   address: http://link:8001  # 网关注册中心
   systemId: api-gateway-test
   systemName: 网关sdk测试工程

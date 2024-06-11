@@ -2,8 +2,10 @@ package cc.geektip.gateway.sdk.config;
 
 import cc.geektip.gateway.sdk.application.GatewaySDKApplication;
 import cc.geektip.gateway.sdk.domain.service.GatewayCenterService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -13,6 +15,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(GatewaySDKProperties.class)
+@ConditionalOnProperty(
+        prefix = "api-gateway-sdk",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class GatewaySDKAutoConfig {
 
     @Bean
