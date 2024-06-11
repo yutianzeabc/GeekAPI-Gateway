@@ -4,6 +4,7 @@ import cc.geektip.gateway.center.domain.manage.model.vo.*;
 import cc.geektip.gateway.center.domain.manage.repository.IConfigManageRepository;
 import cc.geektip.gateway.center.infrastructure.dao.*;
 import cc.geektip.gateway.center.infrastructure.po.*;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Repository;
 
@@ -167,6 +168,21 @@ public class ConfigManageRepository implements IConfigManageRepository {
             gatewayDistributionVO.setUpdateTime(gatewayDistribution.getUpdateTime());
             return gatewayDistributionVO;
         }).toList();
+    }
+
+    @Override
+    public void distributionGatewayServerNode(String groupId, String gatewayId, String systemId, String systemName) {
+        GatewayDistribution gatewayDistribution = new GatewayDistribution();
+        gatewayDistribution.setGroupId(groupId);
+        gatewayDistribution.setGatewayId(gatewayId);
+        gatewayDistribution.setSystemId(systemId);
+        gatewayDistribution.setSystemName(systemName);
+        gatewayDistributionDao.insert(gatewayDistribution);
+    }
+
+    @Override
+    public String queryApplicationSystemName(String systemId) {
+        return applicationSystemDao.queryApplicationSystemName(systemId);
     }
 
 }

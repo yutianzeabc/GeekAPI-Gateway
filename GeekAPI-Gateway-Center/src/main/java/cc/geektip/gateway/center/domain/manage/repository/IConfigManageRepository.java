@@ -33,4 +33,8 @@ public interface IConfigManageRepository {
 
     List<GatewayDistributionVO> queryGatewayDistributionList();
 
+    void distributionGatewayServerNode(String groupId, String gatewayId, String systemId, String systemName);
+
+    String queryApplicationSystemName(String systemId);
+
 }

@@ -60,4 +60,12 @@
         </where>
     </select>
 
+    <select id="queryApplicationSystemName" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT system_name FROM application_system WHERE system_id = #{systemId}
+    </select>
+
+    <select id="isExistBySystemId" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1 FROM application_system WHERE system_id = #{systemId});
+    </select>
+
 </mapper>

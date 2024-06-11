@@ -101,7 +101,7 @@ public class RpcRegisterController {
             applicationInterfaceMethodVO.setHttpCommandType(httpCommandType);
             applicationInterfaceMethodVO.setAuth(auth);
             registerManageService.registerApplicationInterfaceMethod(applicationInterfaceMethodVO);
-            // 推送注册消息
+
             return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), true);
         } catch (DuplicateKeyException e) {
             log.warn("注册应用接口重复 systemId：{} interfaceId：{}", systemId, interfaceId);

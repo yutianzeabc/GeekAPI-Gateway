@@ -10,6 +10,7 @@ import cc.geektip.gateway.center.infrastructure.common.Result;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -102,11 +103,27 @@ public class ConfigManageController {
     }
 
     /**
-     * TODO
+     * 分配网关服务节点
+     * groupId --1:n--> gatewayId --1:n--> systemId
+     * 网关分组下有多个网关，每个网关下有多个系统
+     * @param groupId   分组标识
+     * @param gatewayId 网关标识
+     * @param systemId  系统标识
+     * @return 分配状态
      */
-    @PostMapping(value = "distributionGateway")
-    public void distributionGatewayServerNode(@RequestParam String groupId, @RequestParam String gatewayId) {
-
+    @PostMapping(value = "distributionGatewayServerNode")
+    public Result<Boolean> distributionGatewayServerNode(@RequestParam String groupId, @RequestParam String gatewayId, @RequestParam String systemId) {
+        try {
+            log.info("网关服务节点挂载应用系统 groupId：{} gatewayId：{} systemId：{}", groupId, gatewayId, systemId);
+            configManageService.distributionGatewayServerNode(groupId, gatewayId, systemId);
+            return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), true);
+        } catch (DuplicateKeyException e) {
+            log.warn("网关服务节点与应用系统重复分配 groupId：{} gatewayId：{} systemId：{}", groupId, gatewayId, systemId);
+            return new Result<>(ResponseCode.INDEX_DUP.getCode(), e.getMessage(), true);
+        } catch (Exception e) {
+            log.error("网关服务节点与应用系统分配异常 groupId：{} gatewayId：{} systemId：{}", groupId, gatewayId, systemId, e);
+            return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), false);
+        }
     }
 
     @PostMapping(value = "queryApplicationSystemList")

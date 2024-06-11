@@ -20,6 +20,8 @@ public interface ApplicationInterfaceDao extends BaseMapper<ApplicationInterface
 
     int queryApplicationInterfaceListCountByPage(OperationRequest<ApplicationInterfaceDataVO> request);
 
+    boolean isExistByInterfaceId(ApplicationInterface applicationInterface);
+
 }
 
 

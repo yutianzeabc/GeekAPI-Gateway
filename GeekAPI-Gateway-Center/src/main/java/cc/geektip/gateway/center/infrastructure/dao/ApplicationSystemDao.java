@@ -20,6 +20,10 @@ public interface ApplicationSystemDao extends BaseMapper<ApplicationSystem> {
 
     int queryApplicationSystemListCountByPage(OperationRequest<ApplicationSystemDataVO> request);
 
+    String queryApplicationSystemName(String systemId);
+
+    boolean isExistBySystemId(String systemId);
+
 }
 
 

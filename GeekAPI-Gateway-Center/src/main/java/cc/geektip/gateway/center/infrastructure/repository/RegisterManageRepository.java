@@ -32,6 +32,8 @@ public class RegisterManageRepository implements IRegisterManageRepository {
 
     @Override
     public void registerApplication(ApplicationSystemVO applicationSystemVO) {
+        boolean exist = applicationSystemDao.isExistBySystemId(applicationSystemVO.getSystemId());
+        if (exist) return;
         ApplicationSystem applicationSystem = new ApplicationSystem();
         applicationSystem.setSystemId(applicationSystemVO.getSystemId());
         applicationSystem.setSystemName(applicationSystemVO.getSystemName());
@@ -47,6 +49,8 @@ public class RegisterManageRepository implements IRegisterManageRepository {
         applicationInterface.setInterfaceId(applicationInterfaceVO.getInterfaceId());
         applicationInterface.setInterfaceName(applicationInterfaceVO.getInterfaceName());
         applicationInterface.setInterfaceVersion(applicationInterfaceVO.getInterfaceVersion());
+        boolean exist = applicationInterfaceDao.isExistByInterfaceId(applicationInterface);
+        if (exist) return;
         applicationInterfaceDao.insert(applicationInterface);
     }
 
@@ -61,7 +65,14 @@ public class RegisterManageRepository implements IRegisterManageRepository {
         applicationInterfaceMethod.setUri(applicationInterfaceMethodVO.getUri());
         applicationInterfaceMethod.setHttpCommandType(applicationInterfaceMethodVO.getHttpCommandType());
         applicationInterfaceMethod.setAuth(applicationInterfaceMethodVO.getAuth());
+        boolean exist = applicationInterfaceMethodDao.isExistByInterfaceMethodId(applicationInterfaceMethod);
+        if (exist) return;
         applicationInterfaceMethodDao.insert(applicationInterfaceMethod);
+    }
+
+    @Override
+    public boolean isExistBySystemId(String systemId) {
+        return applicationSystemDao.isExistBySystemId(systemId);
     }
 
 }

@@ -64,4 +64,8 @@
         </where>
     </select>
 
+    <select id="isExistByInterfaceMethodId" parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1 FROM application_interface_method WHERE system_id = #{systemId} AND interface_id = #{interfaceId} AND method_id = #{methodId});
+    </select>
+
 </mapper>

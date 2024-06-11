@@ -8,6 +8,7 @@ import cc.geektip.gateway.center.infrastructure.common.Constants;
 import jakarta.annotation.Resource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ConfigManageService implements IConfigManageService {
     }
 
     @Override
+    @Transactional
     public boolean registerGatewayServerNode(String groupId, String gatewayId, String gatewayName, String gatewayAddress) {
         GatewayServerDetailVO gatewayServerDetailVO = configManageRepository.queryGatewayServerDetail(gatewayId, gatewayAddress);
         if (null == gatewayServerDetailVO) {
@@ -54,6 +56,7 @@ public class ConfigManageService implements IConfigManageService {
     }
 
     @Override
+    @Transactional
     public ApplicationSystemRichInfo queryApplicationSystemRichInfo(String gatewayId, String systemId) {
         // 1. 查询出网关ID对应的关联系统ID集合。也就是一个网关ID会被分配一些系统RPC服务注册进来，需要把这些服务查询出来。
         List<String> systemIdList = new ArrayList<>();
@@ -96,6 +99,15 @@ public class ConfigManageService implements IConfigManageService {
     @Override
     public List<ApplicationInterfaceMethodVO> queryApplicationInterfaceMethodList() {
         return configManageRepository.queryApplicationInterfaceMethodList(null, null);
+    }
+
+    @Override
+    @Transactional
+    public void distributionGatewayServerNode(String groupId, String gatewayId, String systemId) {
+        String systemName = configManageRepository.queryApplicationSystemName(systemId);
+        if (!StringUtils.hasText(systemName))
+            throw new RuntimeException("网关算力与系统挂载配置失败，systemId：" + systemId + " 在 application_system 中不存在！");
+        configManageRepository.distributionGatewayServerNode(groupId, gatewayId, systemId, systemName);
     }
 
 }

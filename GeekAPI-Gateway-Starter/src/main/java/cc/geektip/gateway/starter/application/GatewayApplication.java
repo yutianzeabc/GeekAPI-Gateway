@@ -10,6 +10,7 @@ import cc.geektip.gateway.starter.domain.model.vo.ApplicationInterfaceVO;
 import cc.geektip.gateway.starter.domain.model.vo.ApplicationSystemVO;
 import cc.geektip.gateway.starter.domain.service.GatewayCenterService;
 import io.netty.channel.Channel;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -101,6 +102,11 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
     public void handleMessage(Object message) {
         log.info("【事件通知】接收注册中心推送消息 message：{}", message);
         addMappers(message.toString().substring(1, message.toString().length() - 1));
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("网关服务关闭，停止服务。");
     }
 
 }

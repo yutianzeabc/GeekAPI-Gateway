@@ -13,20 +13,27 @@ public interface IRegisterManageRepository {
 
     /**
      * 注册应用
-     * @param applicationSystemVO 应用系统 VO 对象
+     * @param applicationSystemVO 应用系统 VO
      */
     void registerApplication(ApplicationSystemVO applicationSystemVO);
 
     /**
      * 注册应用接口
-     * @param applicationInterfaceVO 应用接口 VO 对象
+     * @param applicationInterfaceVO 应用接口 VO
      */
     void registerApplicationInterface(ApplicationInterfaceVO applicationInterfaceVO);
 
     /**
      * 注册应用接口方法
-     * @param applicationInterfaceMethodVO
+     * @param applicationInterfaceMethodVO 应用接口方法 VO
      */
     void registerApplicationInterfaceMethod(ApplicationInterfaceMethodVO applicationInterfaceMethodVO);
+
+    /**
+     * 根据系统 ID 判断是否存在
+     * @param systemId 系统 ID
+     * @return 是否存在
+     */
+    boolean isExistBySystemId(String systemId);
 
 }

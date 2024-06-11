@@ -30,4 +30,6 @@ public interface IConfigManageService {
 
     List<ApplicationInterfaceMethodVO> queryApplicationInterfaceMethodList();
 
+    void distributionGatewayServerNode(String groupId, String gatewayId, String systemId);
+
 }
