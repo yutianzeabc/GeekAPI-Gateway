@@ -27,7 +27,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplication", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplication", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplicationInterface", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplicationInterface", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplicationInterfaceMethod", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/register/registerApplicationInterfaceMethod", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class GatewayCenterService {
         String resultStr;
         Result<Boolean> result;
         try {
-            resultStr = HttpUtil.post(address + "/wg/admin/register/registerEvent", paramMap, 1000);
+            resultStr = HttpUtil.post(address + "/wg/admin/register/registerEvent", paramMap, 2000);
             result = JSON.parseObject(resultStr, new TypeReference<>() {
             });
         } catch (Exception e) {
