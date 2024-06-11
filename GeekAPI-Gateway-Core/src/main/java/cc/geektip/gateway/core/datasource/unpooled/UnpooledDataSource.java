@@ -2,10 +2,11 @@ package cc.geektip.gateway.core.datasource.unpooled;
 
 import cc.geektip.gateway.core.datasource.Connection;
 import cc.geektip.gateway.core.datasource.DataSource;
-import cc.geektip.gateway.core.datasource.connection.DubboConnection;
-import cc.geektip.gateway.core.session.Configuration;
 import cc.geektip.gateway.core.datasource.DataSourceType;
+import cc.geektip.gateway.core.datasource.connection.DubboConnection;
+import cc.geektip.gateway.core.datasource.connection.HttpConnection;
 import cc.geektip.gateway.core.mapping.HttpStatement;
+import cc.geektip.gateway.core.session.Configuration;
 import lombok.Data;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
@@ -27,10 +28,13 @@ public class UnpooledDataSource implements DataSource {
     @Override
     public Connection getConnection() {
         switch (dataSourceType) {
-            case HTTP:
-                // TODO 预留
-                break;
-            case DUBBO:
+            case HTTP -> {
+                // 获取 URI
+                String uri = httpStatement.getUri();
+                // 创建连接
+                return new HttpConnection(uri);
+            }
+            case DUBBO -> {
                 // 配置信息
                 String application = httpStatement.getApplication();
                 String interfaceName = httpStatement.getInterfaceName();
@@ -39,10 +43,9 @@ public class UnpooledDataSource implements DataSource {
                 RegistryConfig registryConfig = configuration.getRegistryConfig(application);
                 ReferenceConfig<GenericService> reference = configuration.getReferenceConfig(interfaceName);
                 return new DubboConnection(applicationConfig, registryConfig, reference);
-            default:
-                break;
+            }
         }
-        throw new RuntimeException("DataSourceType：" + dataSourceType + "没有对应的数据源实现");
+        throw new UnsupportedOperationException("DataSourceType：" + dataSourceType + "没有对应的数据源实现");
     }
 
 }
