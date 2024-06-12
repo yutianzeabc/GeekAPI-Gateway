@@ -3,10 +3,10 @@ package cc.geektip.gateway.core.socket.handlers;
 import cc.geektip.gateway.core.mapping.HttpStatement;
 import cc.geektip.gateway.core.session.Configuration;
 import cc.geektip.gateway.core.socket.BaseHandler;
-import cc.geektip.gateway.core.socket.agreement.RequestParser;
-import cc.geektip.gateway.core.socket.agreement.ResponseParser;
 import cc.geektip.gateway.core.socket.agreement.AgreementConstants;
 import cc.geektip.gateway.core.socket.agreement.GatewayResultMessage;
+import cc.geektip.gateway.core.socket.agreement.RequestParser;
+import cc.geektip.gateway.core.socket.agreement.ResponseParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -34,6 +34,11 @@ public class GatewayServerHandler extends BaseHandler<FullHttpRequest> {
             String uri = requestParser.getUri();
             // 2. 保存信息：HttpStatement
             HttpStatement httpStatement = configuration.getHttpStatement(uri);
+            if (null == httpStatement) {
+                DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.NOT_FOUND.getCode(), AgreementConstants.ResponseCode.NOT_FOUND.getInfo()));
+                channel.writeAndFlush(response);
+                return;
+            }
             channel.attr(AgreementConstants.HTTP_STATEMENT).set(httpStatement);
             // 3. 放行服务
             request.retain();
