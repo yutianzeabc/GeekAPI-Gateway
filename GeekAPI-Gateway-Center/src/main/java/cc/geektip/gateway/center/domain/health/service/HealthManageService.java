@@ -10,7 +10,7 @@ import com.github.benmanes.caffeine.cache.RemovalListener;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.connection.Message;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,27 +25,22 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class HealthManageService implements IHealthManageService {
 
+    private static final Long TIMEOUT_MINUTES = 5L;
+    private final Cache<String, LocalDateTime> nodeStatusCache;
     @Resource
     private IHealthManageRepository healthManageRepository;
     @Resource
     private ApplicationEventPublisher eventPublisher;
-    private final Cache<String, LocalDateTime> nodeStatusCache;
-
-    private static final Long TIMEOUT_MINUTES = 5L;
 
     public HealthManageService() {
         nodeStatusCache = Caffeine.newBuilder()
                 .expireAfterAccess(TIMEOUT_MINUTES, TimeUnit.MINUTES)
                 .removalListener((RemovalListener<String, LocalDateTime>) (key, localDateTime, removalCause) -> {
-                    if (removalCause == RemovalCause.EXPIRED || removalCause == RemovalCause.EXPLICIT) {
+                    if (removalCause == RemovalCause.EXPIRED) {
                         String[] parts = key.split(":");
                         String groupId = parts[0];
                         String gatewayId = parts[1];
-                        if (removalCause == RemovalCause.EXPIRED) {
-                            log.info("网关节点执行超时下线：groupId={}, gatewayId={}", groupId, gatewayId);
-                        } else {
-                            log.info("网关节点执行主动下线：groupId={}, gatewayId={}", groupId, gatewayId);
-                        }
+                        log.info("网关节点执行超时下线：groupId={}, gatewayId={}", groupId, gatewayId);
                         handleGatewayServerNodeOffline(groupId, gatewayId);
                     }
                 })
@@ -87,17 +82,23 @@ public class HealthManageService implements IHealthManageService {
         return done;
     }
 
-    public void receiveHeartbeat(Message message) {
-        String key = new String(message.getBody());
+    public void receiveHeartbeat(Object message) {
+        String key = message.toString();
         String[] parts = key.split(":");
         String groupId = parts[0];
         String gatewayId = parts[1];
+        log.debug("网关节点心跳：groupId={}, gatewayId={}", groupId, gatewayId);
         nodeStatusCache.asMap().compute(key, (k, v) -> {
             if (null == v) {
                 handleGatewayServerNodeOnline(groupId, gatewayId);
             }
             return LocalDateTime.now();
         });
+    }
+
+    @Scheduled(fixedRate = 300000)
+    public void checkNodeStatus() {
+        nodeStatusCache.cleanUp();
     }
 
 }

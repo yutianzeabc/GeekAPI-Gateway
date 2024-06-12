@@ -17,7 +17,7 @@ public class HeartbeatPublisher {
 
     private static final String TOPIC = "gateway:heartbeat";
 
-    private final RedisTemplate<String, Object> redisMessageTemplate;
+    private final RedisTemplate<String, String> redisMessageTemplate;
 
     private final GatewayServiceProperties gatewayServiceProperties;
 

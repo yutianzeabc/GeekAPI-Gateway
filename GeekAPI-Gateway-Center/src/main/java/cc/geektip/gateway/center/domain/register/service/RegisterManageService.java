@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @date: 2024/5/29
  */
 @Service
-public class IRegisterManageServiceImpl implements IRegisterManageService {
+public class RegisterManageService implements IRegisterManageService {
 
     @Resource
     private IRegisterManageRepository registerManageRepository;
