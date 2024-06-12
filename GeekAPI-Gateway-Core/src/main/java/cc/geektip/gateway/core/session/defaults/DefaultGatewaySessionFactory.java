@@ -32,7 +32,6 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
 
     private final Configuration configuration;
     private final Cache<String, GatewaySession> sessionCache;
-    private final ExecutorService executorService;
 
     public DefaultGatewaySessionFactory(Configuration configuration) {
         this.configuration = configuration;
@@ -40,7 +39,6 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
                 .expireAfterAccess(15, TimeUnit.MINUTES)
                 .maximumSize(1000)
                 .build();
-        this.executorService = Executors.newVirtualThreadPerTaskExecutor();
     }
 
     @Override
@@ -54,21 +52,12 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
         DataSourceFactory dataSourceFactory = new UnpooledDataSourceFactory();
         dataSourceFactory.setProperties(configuration, uri);
         DataSource dataSource = dataSourceFactory.getDataSource();
-        // 使用虚拟线程创建会话
-        Future<GatewaySession> future = executorService.submit(() -> {
-            // 获取连接
-            Connection connection = dataSource.getConnection();
-            // 创建执行器
-            Executor executor = configuration.newExecutor(connection);
-            // 创建网关会话
-            return new DefaultGatewaySession(configuration, uri, executor);
-        });
-        try {
-            return future.get();
-        } catch (Exception e) {
-            log.error("Error create session. Cause: ", e);
-            throw new RuntimeException("Error create session. Cause: " + e);
-        }
+        // 获取连接
+        Connection connection = dataSource.getConnection();
+        // 创建执行器
+        Executor executor = configuration.newExecutor(connection);
+        // 创建网关会话
+        return new DefaultGatewaySession(configuration, uri, executor);
     }
 
 }
