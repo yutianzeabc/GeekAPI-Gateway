@@ -2,14 +2,15 @@ package cc.geektip.gateway.core.bind;
 
 import cc.geektip.gateway.core.mapping.HttpStatement;
 import cc.geektip.gateway.core.session.GatewaySession;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.RequiredArgsConstructor;
 import net.sf.cglib.core.Signature;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.InterfaceMaker;
 import org.objectweb.asm.Type;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description: 统一泛化调用静态代理工厂
@@ -21,10 +22,13 @@ public class MapperProxyFactory {
 
     private final String uri;
 
-    private final Map<String, IGenericReference> genericReferenceCache = new ConcurrentHashMap<>();
+    private final Cache<String, IGenericReference> genericReferenceCache = Caffeine.newBuilder()
+            .expireAfterAccess(6, TimeUnit.HOURS)
+            .build();
 
     public IGenericReference newInstance(GatewaySession gatewaySession) {
-        return genericReferenceCache.computeIfAbsent(uri, k -> {
+        // 使用Caffeine缓存来获取泛化调用服务
+        return genericReferenceCache.get(uri, k -> {
             HttpStatement httpStatement = gatewaySession.getConfiguration().getHttpStatement(uri);
             // 泛化调用
             MapperProxy genericReferenceProxy = new MapperProxy(gatewaySession, uri);

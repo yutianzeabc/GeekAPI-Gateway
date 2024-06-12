@@ -14,9 +14,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,28 +33,25 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
     public DefaultGatewaySessionFactory(Configuration configuration) {
         this.configuration = configuration;
         this.sessionCache = Caffeine.newBuilder()
-                .expireAfterAccess(15, TimeUnit.MINUTES)
-                .maximumSize(1000)
+                .expireAfterAccess(30, TimeUnit.MINUTES)
                 .build();
     }
 
     @Override
     public GatewaySession openSession(String uri) {
-        // 使用Caffeine缓存来获取会话
-        return sessionCache.get(uri, this::createSession);
-    }
-
-    private GatewaySession createSession(String uri) {
-        // 获取数据源
-        DataSourceFactory dataSourceFactory = new UnpooledDataSourceFactory();
-        dataSourceFactory.setProperties(configuration, uri);
-        DataSource dataSource = dataSourceFactory.getDataSource();
-        // 获取连接
-        Connection connection = dataSource.getConnection();
-        // 创建执行器
-        Executor executor = configuration.newExecutor(connection);
-        // 创建网关会话
-        return new DefaultGatewaySession(configuration, uri, executor);
+        // 使用Caffeine缓存来获取网关会话
+        return sessionCache.get(uri, k -> {
+            // 获取数据源
+            DataSourceFactory dataSourceFactory = new UnpooledDataSourceFactory();
+            dataSourceFactory.setProperties(configuration, uri);
+            DataSource dataSource = dataSourceFactory.getDataSource();
+            // 获取连接
+            Connection connection = dataSource.getConnection();
+            // 创建执行器
+            Executor executor = configuration.newExecutor(connection);
+            // 创建网关会话
+            return new DefaultGatewaySession(configuration, uri, executor);
+        });
     }
 
 }

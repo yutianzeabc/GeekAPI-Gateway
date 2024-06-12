@@ -6,8 +6,8 @@ import cc.geektip.gateway.core.session.GatewaySession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @description: 统一泛化调用注册表
@@ -23,13 +23,14 @@ public class MapperRegistry {
     private final Configuration configuration;
 
     /**
-     *  泛化调用静态代理工厂
+     * 泛化调用静态代理工厂
      */
-    private final Map<String, MapperProxyFactory> knownMappers = new HashMap<>();
+    private final Map<String, MapperProxyFactory> knownMappers = new ConcurrentHashMap<>();
 
     /**
      * 获取泛化调用服务
-     * @param uri 服务URI
+     *
+     * @param uri            服务URI
      * @param gatewaySession 网关会话
      * @return 泛化调用服务
      */
@@ -47,6 +48,7 @@ public class MapperRegistry {
 
     /**
      * 添加映射
+     *
      * @param httpStatement HTTP语句
      */
     public void addMapper(HttpStatement httpStatement) {
