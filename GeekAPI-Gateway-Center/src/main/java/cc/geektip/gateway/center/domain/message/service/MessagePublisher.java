@@ -1,4 +1,4 @@
-package cc.geektip.gateway.center.domain.message;
+package cc.geektip.gateway.center.domain.message.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class Publisher {
+public class MessagePublisher {
 
-    private final RedisTemplate<String, Object> redisMessageTemplate;
+    private final RedisTemplate<String, String> redisMessageTemplate;
 
     public void pushMessage(String topic, Object message) {
         redisMessageTemplate.convertAndSend(topic, message);

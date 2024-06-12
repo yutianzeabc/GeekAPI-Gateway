@@ -4,7 +4,7 @@ import cc.geektip.gateway.center.application.service.IConfigManageService;
 import cc.geektip.gateway.center.application.service.IRegisterManageService;
 import cc.geektip.gateway.center.domain.manage.aggregates.ApplicationSystemRichInfo;
 import cc.geektip.gateway.center.domain.manage.model.vo.GatewayServerVO;
-import cc.geektip.gateway.center.domain.message.Publisher;
+import cc.geektip.gateway.center.domain.message.service.MessagePublisher;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceMethodVO;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationInterfaceVO;
 import cc.geektip.gateway.center.domain.register.model.vo.ApplicationSystemVO;
@@ -96,11 +96,11 @@ public class ApiTest {
     }
 
     @Resource
-    private Publisher publisher;
+    private MessagePublisher messagePublisher;
 
     @Test
     public void test_messages() throws InterruptedException {
-        publisher.pushMessage("api-gateway-g4", "api-gateway-test-provider");
+        messagePublisher.pushMessage("api-gateway-g4", "api-gateway-test-provider");
         Thread.sleep(50000);
     }
 

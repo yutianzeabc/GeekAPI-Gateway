@@ -111,12 +111,12 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
         }
     }
 
-    public void handleMessage(Object message) {
-        log.info("【事件通知】接收注册中心推送消息 message：{}", message);
-        addMappers(message.toString().substring(1, message.toString().length() - 1));
+    public void receiveSystemUpdate(Object message) {
+        log.info("【事件通知】接收注册中心推送应用系统更新消息 message：{}", message);
+        addMappers(message.toString());
     }
 
-    // 每分钟发送一次心跳
+    // 每 60 秒发送心跳
     @Scheduled(fixedRate = 60000)
     public void sendHeartbeat() {
         heartbeatPublisher.doHeartBeat();

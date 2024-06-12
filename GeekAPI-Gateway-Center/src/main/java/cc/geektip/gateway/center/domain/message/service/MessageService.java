@@ -1,7 +1,6 @@
 package cc.geektip.gateway.center.domain.message.service;
 
 import cc.geektip.gateway.center.application.service.IMessageService;
-import cc.geektip.gateway.center.domain.message.Publisher;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class MessageService implements IMessageService {
     private String password;
 
     @Resource
-    private Publisher publisher;
+    private MessagePublisher messagePublisher;
 
     @Override
     public Map<String, String> queryRedisConfig() {
@@ -41,6 +40,6 @@ public class MessageService implements IMessageService {
 
     @Override
     public void pushMessage(String gatewayId, Object message) {
-        publisher.pushMessage(gatewayId, message);
+        messagePublisher.pushMessage(gatewayId, message);
     }
 }
