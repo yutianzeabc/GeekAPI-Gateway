@@ -5,14 +5,30 @@
 <mapper namespace="cc.geektip.gateway.center.infrastructure.dao.ApplicationInterfaceDao">
 
     <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.ApplicationInterface">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
-            <result property="interfaceId" column="interface_id" jdbcType="VARCHAR"/>
-            <result property="interfaceName" column="interface_name" jdbcType="VARCHAR"/>
-            <result property="interfaceVersion" column="interface_version" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
+        <result property="interfaceId" column="interface_id" jdbcType="VARCHAR"/>
+        <result property="interfaceName" column="interface_name" jdbcType="VARCHAR"/>
+        <result property="interfaceVersion" column="interface_version" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <update id="updateApplicationInterface"
+            parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterface">
+        UPDATE application_interface
+        <set>
+            <trim suffixOverrides=",">
+                <if test="interfaceName != null">
+                    interface_name = #{interfaceName},
+                </if>
+                <if test="interfaceVersion != null">
+                    interface_version = #{interfaceVersion},
+                </if>
+            </trim>
+        </set>
+        WHERE system_id = #{systemId} AND interface_id = #{interfaceId}
+    </update>
 
     <select id="queryApplicationInterfaceList"
             parameterType="java.lang.String"
@@ -57,8 +73,12 @@
         </where>
     </select>
 
-    <select id="isExistByInterfaceId" parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterface" resultType="java.lang.Boolean">
-        SELECT EXISTS(SELECT 1 FROM application_interface WHERE system_id = #{systemId} AND interface_id = #{interfaceId});
+    <select id="isExistByInterfaceId" parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterface"
+            resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM application_interface
+                      WHERE system_id = #{systemId}
+                        AND interface_id = #{interfaceId});
     </select>
 
 </mapper>

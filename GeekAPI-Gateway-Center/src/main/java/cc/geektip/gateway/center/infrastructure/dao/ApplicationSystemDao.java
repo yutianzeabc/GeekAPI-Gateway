@@ -14,6 +14,8 @@ import java.util.List;
 */
 public interface ApplicationSystemDao extends BaseMapper<ApplicationSystem> {
 
+    boolean updateApplicationSystem(ApplicationSystem req);
+
     List<ApplicationSystem> queryApplicationSystemList(List<String> list);
 
     List<ApplicationSystem> queryApplicationSystemListByPage(OperationRequest<ApplicationSystemDataVO> request);

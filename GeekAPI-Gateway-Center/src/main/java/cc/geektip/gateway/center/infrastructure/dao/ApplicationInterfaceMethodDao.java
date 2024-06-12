@@ -14,6 +14,8 @@ import java.util.List;
 */
 public interface ApplicationInterfaceMethodDao extends BaseMapper<ApplicationInterfaceMethod> {
 
+    boolean updateApplicationInterfaceMethod(ApplicationInterfaceMethod req);
+
     List<ApplicationInterfaceMethod> queryApplicationInterfaceMethodList(ApplicationInterfaceMethod req);
 
     List<ApplicationInterfaceMethod> queryApplicationInterfaceMethodListByPage(OperationRequest<ApplicationInterfaceMethodDataVO> request);

@@ -32,14 +32,17 @@ public class RegisterManageRepository implements IRegisterManageRepository {
 
     @Override
     public void registerApplication(ApplicationSystemVO applicationSystemVO) {
-        boolean exist = applicationSystemDao.isExistBySystemId(applicationSystemVO.getSystemId());
-        if (exist) return;
         ApplicationSystem applicationSystem = new ApplicationSystem();
         applicationSystem.setSystemId(applicationSystemVO.getSystemId());
         applicationSystem.setSystemName(applicationSystemVO.getSystemName());
         applicationSystem.setSystemType(applicationSystemVO.getSystemType());
         applicationSystem.setSystemRegistry(applicationSystemVO.getSystemRegistry());
-        applicationSystemDao.insert(applicationSystem);
+        boolean exist = applicationSystemDao.isExistBySystemId(applicationSystemVO.getSystemId());
+        if (exist) {
+            applicationSystemDao.updateApplicationSystem(applicationSystem);
+        } else {
+            applicationSystemDao.insert(applicationSystem);
+        }
     }
 
     @Override
@@ -50,8 +53,11 @@ public class RegisterManageRepository implements IRegisterManageRepository {
         applicationInterface.setInterfaceName(applicationInterfaceVO.getInterfaceName());
         applicationInterface.setInterfaceVersion(applicationInterfaceVO.getInterfaceVersion());
         boolean exist = applicationInterfaceDao.isExistByInterfaceId(applicationInterface);
-        if (exist) return;
-        applicationInterfaceDao.insert(applicationInterface);
+        if (exist) {
+            applicationInterfaceDao.updateApplicationInterface(applicationInterface);
+        } else {
+            applicationInterfaceDao.insert(applicationInterface);
+        }
     }
 
     @Override
@@ -66,8 +72,11 @@ public class RegisterManageRepository implements IRegisterManageRepository {
         applicationInterfaceMethod.setHttpCommandType(applicationInterfaceMethodVO.getHttpCommandType());
         applicationInterfaceMethod.setAuth(applicationInterfaceMethodVO.getAuth());
         boolean exist = applicationInterfaceMethodDao.isExistByInterfaceMethodId(applicationInterfaceMethod);
-        if (exist) return;
-        applicationInterfaceMethodDao.insert(applicationInterfaceMethod);
+        if (exist) {
+            applicationInterfaceMethodDao.updateApplicationInterfaceMethod(applicationInterfaceMethod);
+        } else {
+            applicationInterfaceMethodDao.insert(applicationInterfaceMethod);
+        }
     }
 
     @Override

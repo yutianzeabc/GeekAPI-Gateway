@@ -5,14 +5,26 @@
 <mapper namespace="cc.geektip.gateway.center.infrastructure.dao.ApplicationSystemDao">
 
     <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.ApplicationSystem">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
-            <result property="systemName" column="system_name" jdbcType="VARCHAR"/>
-            <result property="systemType" column="system_type" jdbcType="VARCHAR"/>
-            <result property="systemRegistry" column="system_registry" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
+        <result property="systemName" column="system_name" jdbcType="VARCHAR"/>
+        <result property="systemType" column="system_type" jdbcType="VARCHAR"/>
+        <result property="systemRegistry" column="system_registry" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <update id="updateApplicationSystem" parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationSystem">
+        UPDATE application_system
+        <set>
+            <trim suffixOverrides=",">
+                <if test="systemName != null">system_name = #{systemName},</if>
+                <if test="systemType != null">system_type = #{systemType},</if>
+                <if test="systemRegistry != null">system_registry = #{systemRegistry},</if>
+            </trim>
+        </set>
+        WHERE system_id = #{systemId}
+    </update>
 
     <select id="queryApplicationSystemList"
             parameterType="java.util.List"
@@ -61,7 +73,9 @@
     </select>
 
     <select id="queryApplicationSystemName" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT system_name FROM application_system WHERE system_id = #{systemId}
+        SELECT system_name
+        FROM application_system
+        WHERE system_id = #{systemId}
     </select>
 
     <select id="isExistBySystemId" parameterType="java.lang.String" resultType="java.lang.Boolean">

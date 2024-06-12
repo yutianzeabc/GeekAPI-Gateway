@@ -5,18 +5,33 @@
 <mapper namespace="cc.geektip.gateway.center.infrastructure.dao.ApplicationInterfaceMethodDao">
 
     <resultMap id="BaseResultMap" type="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
-            <result property="interfaceId" column="interface_id" jdbcType="VARCHAR"/>
-            <result property="methodId" column="method_id" jdbcType="VARCHAR"/>
-            <result property="methodName" column="method_name" jdbcType="VARCHAR"/>
-            <result property="parameterType" column="parameter_type" jdbcType="VARCHAR"/>
-            <result property="uri" column="uri" jdbcType="VARCHAR"/>
-            <result property="httpCommandType" column="http_command_type" jdbcType="VARCHAR"/>
-            <result property="auth" column="auth" jdbcType="INTEGER"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="systemId" column="system_id" jdbcType="VARCHAR"/>
+        <result property="interfaceId" column="interface_id" jdbcType="VARCHAR"/>
+        <result property="methodId" column="method_id" jdbcType="VARCHAR"/>
+        <result property="methodName" column="method_name" jdbcType="VARCHAR"/>
+        <result property="parameterType" column="parameter_type" jdbcType="VARCHAR"/>
+        <result property="uri" column="uri" jdbcType="VARCHAR"/>
+        <result property="httpCommandType" column="http_command_type" jdbcType="VARCHAR"/>
+        <result property="auth" column="auth" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <update id="updateApplicationInterfaceMethod"
+            parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod">
+        UPDATE application_interface_method
+        <set>
+            <trim suffixOverrides=",">
+                <if test="methodName != null">method_name = #{methodName},</if>
+                <if test="parameterType != null">parameter_type = #{parameterType},</if>
+                <if test="uri != null">uri = #{uri},</if>
+                <if test="httpCommandType != null">http_command_type = #{httpCommandType},</if>
+                <if test="auth != null">auth = #{auth},</if>
+            </trim>
+        </set>
+        WHERE system_id = #{systemId} and interface_id = #{interfaceId} and method_id = #{methodId}
+    </update>
 
     <select id="queryApplicationInterfaceMethodList"
             parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod"
@@ -27,7 +42,7 @@
             <if test="systemId != null">
                 system_id = #{systemId}
             </if>
-            <if test="systemId != null">
+            <if test="interfaceId != null">
                 AND interface_id = #{interfaceId}
             </if>
         </where>
@@ -64,8 +79,14 @@
         </where>
     </select>
 
-    <select id="isExistByInterfaceMethodId" parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod" resultType="java.lang.Boolean">
-        SELECT EXISTS(SELECT 1 FROM application_interface_method WHERE system_id = #{systemId} AND interface_id = #{interfaceId} AND method_id = #{methodId});
+    <select id="isExistByInterfaceMethodId"
+            parameterType="cc.geektip.gateway.center.infrastructure.po.ApplicationInterfaceMethod"
+            resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM application_interface_method
+                      WHERE system_id = #{systemId}
+                        AND interface_id = #{interfaceId}
+                        AND method_id = #{methodId});
     </select>
 
 </mapper>
