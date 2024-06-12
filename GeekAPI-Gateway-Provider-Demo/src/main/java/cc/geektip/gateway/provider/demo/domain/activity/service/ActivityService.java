@@ -19,19 +19,19 @@ public class ActivityService implements IActivityService {
     @Override
     @ApiProducerMethod(methodName = "探活方法", uri = "/wg/activity/sayHi", httpCommandType = "GET", auth = 0)
     public String sayHi(String str) {
-        return "Hello, " + str + "by GeekAPI-Gateway-Provider-Demo!";
+        return "Hello, " + str + " by GeekAPI-Gateway-Provider-Demo!";
     }
 
     @Override
     @ApiProducerMethod(methodName = "插入方法", uri = "/wg/activity/insert", httpCommandType = "POST", auth = 1)
     public String insert(XReq req) {
-        return "OK, insert: " + JSON.toJSONString(req) + "by GeekAPI-Gateway-Provider-Demo!";
+        return "OK, insert: " + JSON.toJSONString(req) + " by GeekAPI-Gateway-Provider-Demo!";
     }
 
     @Override
     @ApiProducerMethod(methodName = "测试方法", uri = "/wg/activity/test", httpCommandType = "POST", auth = 0)
     public String test(String str, XReq req) {
-        return "OK, test: " + str + JSON.toJSONString(req) + "by GeekAPI-Gateway-Provider-Demo!";
+        return "OK, test: " + str + JSON.toJSONString(req) + " by GeekAPI-Gateway-Provider-Demo!";
     }
 
 }

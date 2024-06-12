@@ -33,19 +33,20 @@ public class GatewaySocketServer implements Callable<Channel> {
         this.initEventLoopGroup();
     }
 
-    private void initEventLoopGroup(){
+    private void initEventLoopGroup() {
         boss = new NioEventLoopGroup(configuration.getBossNThreads());
         work = new NioEventLoopGroup(configuration.getWorkNThreads());
     }
 
     @Override
-    public Channel call() throws Exception {
+    public Channel call() {
         ChannelFuture channelFuture = null;
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(boss, work)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .childHandler(new GatewayChannelInitializer(configuration, gatewaySessionFactory));
 
             channelFuture = b.bind(configuration.getPort()).syncUninterruptibly();
