@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -74,11 +75,19 @@ public class GatewayAutoConfig {
 
     @Bean
     public MessageListenerAdapter msgAgreementListenerAdapter(GatewayApplication gatewayApplication) {
-        return new MessageListenerAdapter(gatewayApplication);
+        return new MessageListenerAdapter(gatewayApplication, "receiveSystemUpdate");
     }
 
     @Bean
-    public HeartbeatPublisher heartbeatPublisher(RedisTemplate<String, Object> redisMessageTemplate, GatewayServiceProperties properties) {
+    public RedisTemplate<String, String> redisMessageTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setDefaultSerializer(new StringRedisSerializer());
+        return template;
+    }
+
+    @Bean
+    public HeartbeatPublisher heartbeatPublisher(RedisTemplate<String, String> redisMessageTemplate, GatewayServiceProperties properties) {
         return new HeartbeatPublisher(redisMessageTemplate, properties);
     }
 
