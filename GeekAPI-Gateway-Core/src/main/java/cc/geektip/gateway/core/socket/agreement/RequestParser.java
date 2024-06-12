@@ -82,6 +82,7 @@ public class RequestParser {
 
     private String getContentType() {
         String contentType = request.headers().get("Content-Type");
+        if (null == contentType) return "none";
         int idx = contentType.indexOf(";");
         if (idx > 0) {
             return contentType.substring(0, idx);
