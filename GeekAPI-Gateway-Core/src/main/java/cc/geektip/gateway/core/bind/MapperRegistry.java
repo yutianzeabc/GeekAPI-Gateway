@@ -68,4 +68,8 @@ public class MapperRegistry {
         return knownMappers.containsKey(uri);
     }
 
+    public void clear() {
+        knownMappers.clear();
+    }
+
 }

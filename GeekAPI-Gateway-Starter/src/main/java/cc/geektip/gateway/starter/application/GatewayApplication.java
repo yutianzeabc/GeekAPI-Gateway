@@ -45,48 +45,58 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         try {
-            // 1. 注册网关服务；每一个用于转换 HTTP 协议泛化调用到 RPC 接口的网关都是一个算力，这些算力需要注册网关配置中心
+            // 注册网关服务；每一个用于转换 HTTP 协议泛化调用到 RPC 接口的网关都是一个算力，这些算力需要注册网关配置中心
             gatewayCenterService.doRegister(
                     properties.getAddress(),
                     properties.getGroupId(),
                     properties.getGatewayId(),
                     properties.getGatewayName(),
                     properties.getGatewayAddress());
-            addMappers("");
+            reloadMappers("");
         } catch (Exception e) {
             log.error("网关服务启动失败，停止服务。{}", e.getMessage(), e);
             throw e;
         }
     }
 
-    public void addMappers(String systemId) {
-        // 2. 拉取网关配置；每个网关算力都会在注册中心分配上需要映射的RPC服务信息，包括；系统、接口、方法
-        ApplicationSystemRichInfo applicationSystemRichInfo = gatewayCenterService.pullApplicationSystemRichInfo(properties.getAddress(), properties.getGatewayId(), systemId);
-        List<ApplicationSystemVO> applicationSystemVOList = applicationSystemRichInfo.getApplicationSystemVOList();
-        if (applicationSystemVOList.isEmpty()) {
-            log.warn("网关{}服务注册映射为空，请检查是否正确从注册中心拉取到此网关算力所需的配置数据！", systemId);
-            return;
-        }
-        for (ApplicationSystemVO system : applicationSystemVOList) {
-            List<ApplicationInterfaceVO> interfaceList = system.getInterfaceList();
-            for (ApplicationInterfaceVO itf : interfaceList) {
-                // 2.1 创建配置信息加载注册
-                configuration.registryConfig(system.getSystemId(), system.getSystemRegistry(), itf.getInterfaceId(), itf.getInterfaceVersion());
-                List<ApplicationInterfaceMethodVO> methodList = itf.getMethodList();
-                // 2.2 注册系统服务接口信息
-                for (ApplicationInterfaceMethodVO itm : methodList) {
-                    HttpStatement httpStatement = new HttpStatement(
-                            system.getSystemId(),
-                            itf.getInterfaceId(),
-                            itm.getMethodId(),
-                            itm.getParameterType(),
-                            itm.getUri(),
-                            HttpCommandType.valueOf(itm.getHttpCommandType()),
-                            itm.isAuth());
-                    configuration.addMapper(httpStatement);
-                    log.info("网关服务注册映射 -> 系统：{} 接口：{} 方法：{}", system.getSystemId(), itf.getInterfaceId(), itm.getMethodId());
+    public void reloadMappers(String systemId) {
+        log.info("网关服务重新加载配置，systemId：{}", systemId);
+        // 1. 获取网关生命周期配置写锁
+        configuration.requireWLock();
+        // 2. 清空当前配置
+        configuration.clear();
+        try {
+            // 3. 拉取网关配置；每个网关算力都会在注册中心分配上需要映射的RPC服务信息，包括；系统、接口、方法
+            ApplicationSystemRichInfo applicationSystemRichInfo = gatewayCenterService.pullApplicationSystemRichInfo(properties.getAddress(), properties.getGatewayId(), systemId);
+            List<ApplicationSystemVO> applicationSystemVOList = applicationSystemRichInfo.getApplicationSystemVOList();
+            if (applicationSystemVOList.isEmpty()) {
+                log.warn("网关{}服务注册映射为空，请检查是否正确从注册中心拉取到此网关算力所需的配置数据！", systemId);
+                return;
+            }
+            for (ApplicationSystemVO system : applicationSystemVOList) {
+                List<ApplicationInterfaceVO> interfaceList = system.getInterfaceList();
+                for (ApplicationInterfaceVO itf : interfaceList) {
+                    // 3.1 创建配置信息加载注册
+                    configuration.registryConfig(system.getSystemId(), system.getSystemRegistry(), itf.getInterfaceId(), itf.getInterfaceVersion());
+                    List<ApplicationInterfaceMethodVO> methodList = itf.getMethodList();
+                    // 3.2 注册系统服务接口信息
+                    for (ApplicationInterfaceMethodVO itm : methodList) {
+                        HttpStatement httpStatement = new HttpStatement(
+                                system.getSystemId(),
+                                itf.getInterfaceId(),
+                                itm.getMethodId(),
+                                itm.getParameterType(),
+                                itm.getUri(),
+                                HttpCommandType.valueOf(itm.getHttpCommandType()),
+                                itm.isAuth());
+                        configuration.addMapper(httpStatement);
+                        log.info("网关服务注册映射 -> 系统：{} 接口：{} 方法：{}", system.getSystemId(), itf.getInterfaceId(), itm.getMethodId());
+                    }
                 }
             }
+        } finally {
+            // 4. 释放网关生命周期配置写锁
+            configuration.releaseWLock();
         }
     }
 
@@ -113,7 +123,7 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
 
     public void receiveSystemUpdate(Object message) {
         log.info("【事件通知】接收注册中心推送应用系统更新消息 message：{}", message);
-        addMappers(message.toString());
+        reloadMappers(message.toString());
     }
 
     // 每 60 秒发送心跳

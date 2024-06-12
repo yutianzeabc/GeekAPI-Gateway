@@ -6,9 +6,9 @@ import cc.geektip.gateway.core.session.GatewaySession;
 import cc.geektip.gateway.core.session.defaults.DefaultGatewaySessionFactory;
 import cc.geektip.gateway.core.socket.BaseHandler;
 import cc.geektip.gateway.core.socket.agreement.AgreementConstants;
+import cc.geektip.gateway.core.socket.agreement.GatewayResultMessage;
 import cc.geektip.gateway.core.socket.agreement.RequestParser;
 import cc.geektip.gateway.core.socket.agreement.ResponseParser;
-import cc.geektip.gateway.core.socket.agreement.GatewayResultMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -32,30 +32,35 @@ public class ProtocolDataHandler extends BaseHandler<FullHttpRequest> {
     @Override
     protected void session(ChannelHandlerContext ctx, Channel channel, FullHttpRequest request) {
         log.info("网关接收请求【消息】 URI={} Method={}", request.uri(), request.method());
+        // 1. 获取网关生命周期配置读锁
+        gatewaySessionFactory.getConfiguration().requireRLock();
         try {
-            // 1. 解析请求参数
+            // 2. 解析请求参数
             RequestParser requestParser = new RequestParser(request);
             String uri = requestParser.getUri();
             if (null == uri) return;
             Map<String, Object> args = requestParser.parse();
 
-            // 2. 调用会话服务
+            // 3. 调用会话服务
             GatewaySession gatewaySession = gatewaySessionFactory.openSession(uri);
             IGenericReference reference = gatewaySession.getMapper();
             SessionResult result = reference.$invoke(args);
 
-            // 3. 封装返回结果
+            // 4. 封装返回结果
             log.debug("网关协议调用结果：{}", result);
             DefaultFullHttpResponse response = new ResponseParser().parse("0000".equals(result.getCode()) ? GatewayResultMessage.buildSuccess(result.getData(), node()) : GatewayResultMessage.buildError(AgreementConstants.ResponseCode.NOT_FOUND.getCode(), "网关协议调用失败，远程API错误！", node()));
             channel.writeAndFlush(response);
         } catch (Exception e) {
             DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.BAD_GATEWAY.getCode(), "网关协议调用失败！" + e.getMessage(), node()));
             channel.writeAndFlush(response);
+        } finally {
+            // 5. 释放网关生命周期配置读锁
+            gatewaySessionFactory.getConfiguration().releaseRLock();
         }
     }
 
     private String node() {
-        return gatewaySessionFactory.getConfiguration().getHostName()+":"+gatewaySessionFactory.getConfiguration().getPort();
+        return gatewaySessionFactory.getConfiguration().getHostName() + ":" + gatewaySessionFactory.getConfiguration().getPort();
     }
 
 }

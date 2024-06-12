@@ -185,14 +185,14 @@ public class ConfigManageController {
     @PostMapping(value = "queryApplicationSystemRichInfo")
     public Result<ApplicationSystemRichInfo> queryApplicationSystemRichInfo(@RequestParam String gatewayId, @RequestParam String systemId) {
         try {
-            log.info("查询分配到网关下的待注册系统信息(系统、接口、方法) gatewayId：{}", gatewayId);
+            log.info("查询指定网关服务节点下的应用系统信息(系统、接口、方法) gatewayId：{}", gatewayId);
             ApplicationSystemRichInfo applicationSystemRichInfo = configManageService.queryApplicationSystemRichInfo(gatewayId, systemId);
             return new Result<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), applicationSystemRichInfo);
         } catch (IllegalArgumentException e) {
-            log.error("查询分配到网关下的待注册系统信息(系统、接口、方法)异常 gatewayId：{}", gatewayId, e);
+            log.error("查询指定网关服务节点下的应用系统信息(系统、接口、方法)异常 gatewayId：{}", gatewayId, e);
             return new Result<>(ResponseCode.ILLEGAL_PARAMETER.getCode(), e.getMessage(), null);
         } catch (Exception e) {
-            log.error("查询分配到网关下的待注册系统信息(系统、接口、方法)异常 gatewayId：{}", gatewayId, e);
+            log.error("查询指定网关服务节点下的应用系统信息(系统、接口、方法)异常 gatewayId：{}", gatewayId, e);
             return new Result<>(ResponseCode.UNKNOWN_ERROR.getCode(), e.getMessage(), null);
         }
     }
