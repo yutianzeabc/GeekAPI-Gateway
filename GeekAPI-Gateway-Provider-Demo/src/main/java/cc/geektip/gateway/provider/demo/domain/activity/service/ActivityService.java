@@ -12,7 +12,7 @@ import org.apache.dubbo.config.annotation.DubboService;
  * @author: Fish
  * @date: 2024/6/10
  */
-@DubboService
+@DubboService(version = "1.0.0")
 @ApiProducerClazz(interfaceName = "活动服务", interfaceVersion = "1.0.0")
 public class ActivityService implements IActivityService {
 
