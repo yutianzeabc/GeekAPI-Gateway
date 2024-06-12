@@ -44,6 +44,7 @@ public class GatewayServerHandler extends BaseHandler<FullHttpRequest> {
             request.retain();
             ctx.fireChannelRead(request);
         } catch (Exception e) {
+            log.error("网关协议调用失败！{}", e.getMessage(), e);
             DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.INTERNAL_ERROR.getCode(), "网关协议调用失败！" + e.getMessage()));
             channel.writeAndFlush(response);
         }

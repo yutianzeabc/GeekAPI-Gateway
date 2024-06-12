@@ -58,6 +58,7 @@ public class AuthorizationHandler extends BaseHandler<FullHttpRequest> {
                 ctx.fireChannelRead(request);
             }
         } catch (Exception e) {
+            log.error("网关协议调用失败！{}", e.getMessage(), e);
             channel.writeAndFlush(new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.INTERNAL_ERROR.getCode(), "网关协议调用失败！" + e.getMessage())));
         }
     }
