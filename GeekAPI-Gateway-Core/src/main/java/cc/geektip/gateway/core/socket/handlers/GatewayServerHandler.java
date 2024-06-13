@@ -27,7 +27,7 @@ public class GatewayServerHandler extends BaseHandler<FullHttpRequest> {
 
     @Override
     protected void session(ChannelHandlerContext ctx, final Channel channel, FullHttpRequest request) {
-        log.info("网关接收请求【全局】 URI={} Method={}", request.uri(), request.method());
+        log.debug("网关接收请求【全局】 URI={} Method={}", request.uri(), request.method());
         try {
             // 1. 解析参数
             RequestParser requestParser = new RequestParser(request);

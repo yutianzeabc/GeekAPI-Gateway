@@ -25,7 +25,7 @@ public class AuthorizationHandler extends BaseHandler<FullHttpRequest> {
 
     @Override
     protected void session(ChannelHandlerContext ctx, Channel channel, FullHttpRequest request) {
-        log.info("网关接收请求【鉴权】 URI={} Method={}", request.uri(), request.method());
+        log.debug("网关接收请求【鉴权】 URI={} Method={}", request.uri(), request.method());
         try {
             HttpStatement httpStatement = channel.attr(AgreementConstants.HTTP_STATEMENT).get();
             if (httpStatement.isAuth()) {

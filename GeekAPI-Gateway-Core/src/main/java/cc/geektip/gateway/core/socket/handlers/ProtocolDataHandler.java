@@ -31,7 +31,7 @@ public class ProtocolDataHandler extends BaseHandler<FullHttpRequest> {
 
     @Override
     protected void session(ChannelHandlerContext ctx, Channel channel, FullHttpRequest request) {
-        log.info("网关接收请求【消息】 URI={} Method={}", request.uri(), request.method());
+        log.debug("网关接收请求【消息】 URI={} Method={}", request.uri(), request.method());
         // 1. 获取网关生命周期配置读锁
         gatewaySessionFactory.getConfiguration().requireRLock();
         try {

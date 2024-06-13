@@ -1,10 +1,10 @@
 package cc.geektip.gateway.core.executor;
 
 import cc.geektip.gateway.core.datasource.Connection;
+import cc.geektip.gateway.core.executor.result.SessionResult;
 import cc.geektip.gateway.core.mapping.HttpStatement;
 import cc.geektip.gateway.core.session.Configuration;
 import cc.geektip.gateway.core.type.SimpleTypeRegistry;
-import cc.geektip.gateway.core.executor.result.SessionResult;
 import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public abstract class BaseExecutor implements Executor {
         String parameterType = httpStatement.getParameterType();
         String[] parameterTypes = new String[]{parameterType};
         Object[] args = SimpleTypeRegistry.isSimpleType(parameterType) ? params.values().toArray() : new Object[]{params};
-        log.info("Call Method: {}#{}.{}({}) args：{}", httpStatement.getApplication(), httpStatement.getInterfaceName(), httpStatement.getMethodName(), JSON.toJSONString(parameterTypes), JSON.toJSONString(args));
+        log.debug("执行远程方法调用: {}#{}.{}({}) args：{}", httpStatement.getApplication(), httpStatement.getInterfaceName(), httpStatement.getMethodName(), JSON.toJSONString(parameterTypes), JSON.toJSONString(args));
         // 调用抽象方法
         try {
             Object data = doExec(methodName, parameterTypes, args);
