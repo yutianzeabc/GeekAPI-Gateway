@@ -1,6 +1,11 @@
 server:
   port: 8082
 
+spring:
+  threads:
+    virtual:
+      enabled: true
+
 dubbo:
   application:
     name: api-gateway-test
