@@ -32,30 +32,35 @@ public class ProtocolDataHandler extends BaseHandler<FullHttpRequest> {
     @Override
     protected void session(ChannelHandlerContext ctx, Channel channel, FullHttpRequest request) {
         log.debug("网关接收请求【消息】 URI={} Method={}", request.uri(), request.method());
-        // 1. 获取网关生命周期配置读锁
-        gatewaySessionFactory.getConfiguration().requireRLock();
+
         try {
-            // 2. 解析请求参数
+            // 1. 解析请求参数
             RequestParser requestParser = new RequestParser(request);
             String uri = requestParser.getUri();
             if (null == uri) return;
             Map<String, Object> args = requestParser.parse();
 
-            // 3. 调用会话服务
-            GatewaySession gatewaySession = gatewaySessionFactory.openSession(uri);
-            IGenericReference reference = gatewaySession.getMapper();
-            SessionResult result = reference.$invoke(args);
+            // 2. 获取网关生命周期配置读锁
+            SessionResult result;
+            gatewaySessionFactory.getConfiguration().requireRLock();
+            try {
+                // 3. 调用会话服务
+                GatewaySession gatewaySession = gatewaySessionFactory.openSession(uri);
+                IGenericReference reference = gatewaySession.getMapper();
+                result = reference.$invoke(args);
+                if (null == result) throw new IllegalStateException("网关会话服务响应 SessionResult 为空！");
+            } finally {
+                // 4. 释放网关生命周期配置读锁
+                gatewaySessionFactory.getConfiguration().releaseRLock();
+            }
 
-            // 4. 封装返回结果
+            // 5. 封装返回结果
             log.debug("网关协议调用结果：{}", result);
             DefaultFullHttpResponse response = new ResponseParser().parse("0000".equals(result.getCode()) ? GatewayResultMessage.buildSuccess(result.getData(), node()) : GatewayResultMessage.buildError(AgreementConstants.ResponseCode.NOT_FOUND.getCode(), "网关协议调用失败，远程API错误！", node()));
             channel.writeAndFlush(response);
         } catch (Exception e) {
             DefaultFullHttpResponse response = new ResponseParser().parse(GatewayResultMessage.buildError(AgreementConstants.ResponseCode.BAD_GATEWAY.getCode(), "网关协议调用失败！" + e.getMessage(), node()));
             channel.writeAndFlush(response);
-        } finally {
-            // 5. 释放网关生命周期配置读锁
-            gatewaySessionFactory.getConfiguration().releaseRLock();
         }
     }
 

@@ -61,25 +61,32 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
 
     public void reloadMappers(String systemId) {
         log.info("网关服务重新加载配置，systemId：{}", systemId);
-        // 1. 获取网关生命周期配置写锁
-        configuration.requireWLock();
-        // 2. 清空当前配置
-        configuration.clear();
+        // 1. 拉取网关服务配置
+        List<ApplicationSystemVO> applicationSystemVOList;
         try {
-            // 3. 拉取网关配置；每个网关算力都会在注册中心分配上需要映射的RPC服务信息，包括；系统、接口、方法
             ApplicationSystemRichInfo applicationSystemRichInfo = gatewayCenterService.pullApplicationSystemRichInfo(properties.getAddress(), properties.getGatewayId(), systemId);
-            List<ApplicationSystemVO> applicationSystemVOList = applicationSystemRichInfo.getApplicationSystemVOList();
-            if (applicationSystemVOList.isEmpty()) {
+            applicationSystemVOList = applicationSystemRichInfo.getApplicationSystemVOList();
+            if (null == applicationSystemVOList || applicationSystemVOList.isEmpty()) {
                 log.warn("网关{}服务注册映射为空，请检查是否正确从注册中心拉取到此网关算力所需的配置数据！", systemId);
                 return;
             }
+        } catch (Exception e) {
+            log.error("网关服务重新加载配置失败，systemId：{}，{}", systemId, e.getMessage(), e);
+            return;
+        }
+        // 2. 获取网关生命周期配置写锁
+        configuration.requireWLock();
+        // 3. 清空当前网关服务配置
+        configuration.clear();
+        // 4. 载入网关服务配置
+        try {
             for (ApplicationSystemVO system : applicationSystemVOList) {
                 List<ApplicationInterfaceVO> interfaceList = system.getInterfaceList();
                 for (ApplicationInterfaceVO itf : interfaceList) {
-                    // 3.1 创建配置信息加载注册
+                    // 4.1 创建配置信息加载注册
                     configuration.registryConfig(system.getSystemId(), system.getSystemRegistry(), itf.getInterfaceId(), itf.getInterfaceVersion());
                     List<ApplicationInterfaceMethodVO> methodList = itf.getMethodList();
-                    // 3.2 注册系统服务接口信息
+                    // 4.2 注册系统服务接口信息
                     for (ApplicationInterfaceMethodVO itm : methodList) {
                         HttpStatement httpStatement = new HttpStatement(
                                 system.getSystemId(),
@@ -94,8 +101,10 @@ public class GatewayApplication implements ApplicationContextAware, ApplicationL
                     }
                 }
             }
+        } catch (Exception e) {
+            log.error("网关服务重新加载配置失败，systemId：{}，{}", systemId, e.getMessage(), e);
         } finally {
-            // 4. 释放网关生命周期配置写锁
+            // 5. 释放网关生命周期配置写锁
             configuration.releaseWLock();
         }
     }

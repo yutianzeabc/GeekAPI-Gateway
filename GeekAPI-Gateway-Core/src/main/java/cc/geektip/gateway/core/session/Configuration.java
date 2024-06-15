@@ -80,7 +80,7 @@ public class Configuration {
         releaseWLock();
     }
 
-    public synchronized void registryConfig(String applicationName, String address, String interfaceName, String version) {
+    public void registryConfig(String applicationName, String address, String interfaceName, String version) {
         if (applicationConfigMap.get(applicationName) == null) {
             ApplicationConfig application = new ApplicationConfig();
             application.setName(applicationName);
