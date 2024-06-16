@@ -24,7 +24,6 @@ public class MapperProxyFactory {
     private final String uri;
 
     private final Cache<String, IGenericReference> genericReferenceCache = Caffeine.newBuilder()
-            .executor(Executors.newVirtualThreadPerTaskExecutor())
             .expireAfterAccess(6, TimeUnit.HOURS)
             .build();
 

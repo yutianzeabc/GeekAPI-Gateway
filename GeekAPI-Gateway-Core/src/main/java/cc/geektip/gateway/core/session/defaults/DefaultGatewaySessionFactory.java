@@ -34,7 +34,6 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
     public DefaultGatewaySessionFactory(Configuration configuration) {
         this.configuration = configuration;
         this.sessionCache = Caffeine.newBuilder()
-                .executor(Executors.newVirtualThreadPerTaskExecutor())
                 .expireAfterAccess(30, TimeUnit.MINUTES)
                 .build();
     }

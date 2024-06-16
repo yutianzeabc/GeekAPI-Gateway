@@ -35,7 +35,6 @@ public class HealthManageService implements IHealthManageService {
 
     public HealthManageService() {
         nodeStatusCache = Caffeine.newBuilder()
-                .executor(Executors.newVirtualThreadPerTaskExecutor())
                 .expireAfterAccess(TIMEOUT_MINUTES, TimeUnit.MINUTES)
                 .removalListener((RemovalListener<String, LocalDateTime>) (key, localDateTime, removalCause) -> {
                     if (removalCause == RemovalCause.EXPIRED) {
