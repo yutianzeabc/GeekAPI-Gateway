@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,6 +34,7 @@ public class DefaultGatewaySessionFactory implements GatewaySessionFactory {
     public DefaultGatewaySessionFactory(Configuration configuration) {
         this.configuration = configuration;
         this.sessionCache = Caffeine.newBuilder()
+                .executor(Executors.newVirtualThreadPerTaskExecutor())
                 .expireAfterAccess(30, TimeUnit.MINUTES)
                 .build();
     }

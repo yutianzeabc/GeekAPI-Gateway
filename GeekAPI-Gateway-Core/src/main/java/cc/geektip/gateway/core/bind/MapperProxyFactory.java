@@ -10,6 +10,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.InterfaceMaker;
 import org.objectweb.asm.Type;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,6 +24,7 @@ public class MapperProxyFactory {
     private final String uri;
 
     private final Cache<String, IGenericReference> genericReferenceCache = Caffeine.newBuilder()
+            .executor(Executors.newVirtualThreadPerTaskExecutor())
             .expireAfterAccess(6, TimeUnit.HOURS)
             .build();
 
