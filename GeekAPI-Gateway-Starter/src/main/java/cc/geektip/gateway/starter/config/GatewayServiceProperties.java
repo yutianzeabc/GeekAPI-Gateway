@@ -32,5 +32,13 @@ public class GatewayServiceProperties {
      * 网关地址
      */
     private String gatewayAddress;
+    /**
+     * boss线程数
+     */
+    private int bossNThreads = 0;
+    /**
+     * worker线程数
+     */
+    private int workerNThreads = 0;
 
 }

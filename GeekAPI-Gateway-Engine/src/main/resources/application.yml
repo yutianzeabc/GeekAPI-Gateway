@@ -8,7 +8,9 @@ spring:
 
 api-gateway:
   address: http://link:8001
-  groupId: 10001                  # 网关分组；每一个网关通信组件都分配一个对应的分组
-  gatewayId: api-gateway-g4       # 网关标识；
+  groupId: 10001                  # 网关分组：每一个网关通信组件都分配一个对应的分组ID
+  gatewayId: api-gateway-g4       # 网关标识
   gatewayName: 电商配送网关         # 网关名称
-  gatewayAddress: link:7397       # 网关服务；网关的通信服务Netty启动时使用IP和端口
+  gatewayAddress: link:7397       # 网关服务：网关的通信服务Netty启动时使用IP和端口
+  boss-n-threads: 1               # Netty服务端的Boss线程数, 0表示使用Netty默认值
+  worker-n-threads: 0             # Netty服务端的Worker线程数, 0表示使用Netty默认值

@@ -114,6 +114,8 @@ public class GatewayAutoConfig {
         String[] split = properties.getGatewayAddress().split(":");
         configuration.setHostName(split[0].trim());
         configuration.setPort(Integer.parseInt(split[1].trim()));
+        configuration.setBossNThreads(properties.getBossNThreads());
+        configuration.setWorkNThreads(properties.getWorkerNThreads());
         return configuration;
     }
 

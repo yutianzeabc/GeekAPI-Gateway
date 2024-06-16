@@ -48,7 +48,7 @@ public class Configuration {
     // 网关 Netty 服务端口
     private int port = 7397;
     // 网关 Netty 服务线程数配置
-    private int bossNThreads = 1;
+    private int bossNThreads = 0;
     private int workNThreads = 0;
 
     public Configuration() {
