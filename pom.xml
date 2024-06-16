@@ -6,5 +6,15 @@
     <groupId>cc.geektip</groupId>
     <artifactId>geekapi-gateway</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>geekapi-gateway-core</module>
+        <module>geekapi-gateway-starter</module>
+        <module>geekapi-gateway-engine</module>
+        <module>geekapi-gateway-center</module>
+        <module>geekapi-gateway-SDK</module>
+        <module>geekapi-gateway-provider-demo</module>
+    </modules>
 
 </project>
