@@ -25,6 +25,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -127,13 +128,17 @@ public class GatewayAutoConfig {
         // 1. 基于配置构建会话工厂
         DefaultGatewaySessionFactory gatewaySessionFactory = new DefaultGatewaySessionFactory(configuration);
         // 2. 创建启动网关网络服务
+        Channel channel;
         GatewaySocketServer server = new GatewaySocketServer(configuration, gatewaySessionFactory);
-        Future<Channel> future = Executors.newFixedThreadPool(2).submit(server);
-        Channel channel = future.get();
-        if (null == channel) throw new RuntimeException("api gateway core netty server start error channel is null");
-        while (!channel.isActive()) {
-            log.info("api gateway core netty server gateway starting ...");
-            Thread.sleep(500);
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future<Channel> future = executor.submit(server);
+            channel = future.get();
+            if (null == channel)
+                throw new RuntimeException("api gateway core netty server start error channel is null");
+            while (!channel.isActive()) {
+                log.info("api gateway core netty server gateway starting ...");
+                Thread.sleep(500);
+            }
         }
         log.info("api gateway core netty server gateway start done! {}", channel.localAddress());
         return channel;
