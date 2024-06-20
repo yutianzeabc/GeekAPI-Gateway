@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties("api-gateway-sdk")
 public class GatewaySDKProperties {
+
     /**
      * SDK服务上报是否启用
      */

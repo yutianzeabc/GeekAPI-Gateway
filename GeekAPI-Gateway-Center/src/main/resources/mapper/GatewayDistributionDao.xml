@@ -14,8 +14,13 @@
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <select id="queryGatewayDistributionSystemIdList" resultType="java.lang.String">
+    <select id="queryGatewayDistributionSystemIdList" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT system_id FROM gateway_distribution
+        <where>
+            <if test="gatewayId != null and gatewayId != ''">
+                and gatewayId = #{gatewayId}
+            </if>
+        </where>
     </select>
 
     <select id="queryGatewayDistribution" parameterType="java.lang.String" resultType="java.lang.String">

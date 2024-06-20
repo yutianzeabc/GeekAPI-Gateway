@@ -8,13 +8,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 
 /**
-* @author Fish
-* @description 针对表【gateway_distribution】的数据库操作Mapper
-* @Entity cc.geektip.gateway.center.infrastructure.po.GatewayDistribution
-*/
+ * @author Fish
+ * @description 针对表【gateway_distribution】的数据库操作Mapper
+ * @Entity cc.geektip.gateway.center.infrastructure.po.GatewayDistribution
+ */
 public interface GatewayDistributionDao extends BaseMapper<GatewayDistribution> {
 
-    List<String> queryGatewayDistributionSystemIdList();
+    List<String> queryGatewayDistributionSystemIdList(String gatewayId);
 
     String queryGatewayDistribution(String systemId);
 

@@ -60,12 +60,10 @@ public class ConfigManageService implements IConfigManageService {
     public ApplicationSystemRichInfo queryApplicationSystemRichInfo(String gatewayId, String systemId) {
         // 1. 查询出网关ID对应的关联系统ID集合。也就是一个网关ID会被分配一些系统RPC服务注册进来，需要把这些服务查询出来。
         List<String> systemIdList = new ArrayList<>();
-        if (StringUtils.hasText(systemId)){
+        if (StringUtils.hasText(systemId)) {
             systemIdList.add(systemId);
-        } else if (StringUtils.hasText(gatewayId)) {
-            systemIdList = configManageRepository.queryGatewayDistributionSystemIdList(gatewayId);
         } else {
-            throw new IllegalArgumentException("网关ID和系统ID不能同时为空");
+            systemIdList = configManageRepository.queryGatewayDistributionSystemIdList(gatewayId);
         }
         // 2. 查询系统ID对应的系统列表信息
         List<ApplicationSystemVO> applicationSystemVOList = configManageRepository.queryApplicationSystemList(systemIdList);

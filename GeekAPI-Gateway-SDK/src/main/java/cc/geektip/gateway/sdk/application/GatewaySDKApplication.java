@@ -75,7 +75,8 @@ public class GatewaySDKApplication implements BeanPostProcessor {
                     parameterType,
                     apiProducerMethod.uri(),
                     apiProducerMethod.httpCommandType(),
-                    apiProducerMethod.auth());
+                    apiProducerMethod.auth()
+            );
             gatewayCenterService.doRegisterApplicationInterfaceMethod(
                     properties.getAddress(),
                     properties.getSystemId(),

@@ -98,7 +98,7 @@ public class ConfigManageRepository implements IConfigManageRepository {
 
     @Override
     public List<String> queryGatewayDistributionSystemIdList(String gatewayId) {
-        return gatewayDistributionDao.queryGatewayDistributionSystemIdList();
+        return gatewayDistributionDao.queryGatewayDistributionSystemIdList(gatewayId);
     }
 
     @Override
